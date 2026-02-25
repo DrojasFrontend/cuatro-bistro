@@ -48,6 +48,15 @@ function normalizeExcerpt(html = "") {
     .join("\n\n");
 }
 
+function shortenExcerpt(text = "", maxLength = 220) {
+  if (text.length <= maxLength) return text;
+
+  const truncated = text.slice(0, maxLength);
+  const lastSpace = truncated.lastIndexOf(" ");
+  const safeCut = lastSpace > 120 ? truncated.slice(0, lastSpace) : truncated;
+  return `${safeCut}...`;
+}
+
 export async function wpFetch(query, { variables = {}, revalidate = 300, tags = [] } = {}) {
   if (!WPGRAPHQL_URL) {
     throw new Error("Missing WPGRAPHQL_URL. Add it to .env.local");
@@ -105,11 +114,16 @@ export async function getBlogPosts() {
     { revalidate: 300, tags: ["posts"] },
   );
 
-  return (data?.posts?.nodes || []).map((post) => ({
-    ...post,
-    excerptText: normalizeExcerpt(post.excerpt || ""),
-    dateLabel: post.date ? new Date(post.date).toLocaleDateString("es-CO") : "",
-  }));
+  return (data?.posts?.nodes || []).map((post) => {
+    const normalized = normalizeExcerpt(post.excerpt || "");
+    const firstParagraph = normalized.split("\n\n")[0] || normalized;
+
+    return {
+      ...post,
+      excerptText: shortenExcerpt(firstParagraph, 220),
+      dateLabel: post.date ? new Date(post.date).toLocaleDateString("es-CO") : "",
+    };
+  });
 }
 
 export async function getBlogPostBySlug(slug) {
