@@ -5,12 +5,47 @@ function formatWpError(error) {
   return error?.message || JSON.stringify(error);
 }
 
+function decodeHtmlEntities(text = "") {
+  return text
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#039;|&apos;/gi, "'")
+    .replace(/&hellip;/gi, "...")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">");
+}
+
 function stripHtml(html = "") {
   return html
+    .replace(/<!--[\s\S]*?-->/g, " ")
+    .replace(/<(br|BR)\s*\/?>/g, "\n")
+    .replace(/<\/(p|div|li|h1|h2|h3|h4|h5|h6)>/gi, "\n")
+    .replace(/<li[^>]*>/gi, "- ")
     .replace(/<[^>]*>/g, " ")
-    .replace(/&nbsp;/g, " ")
-    .replace(/\s+/g, " ")
+    .replace(/\[\s*&hellip;\s*\]/gi, "...")
+    .replace(/\[[^\]]+\]/g, " ")
+    .replace(/#text\b/gi, " ")
+    .replace(/&#x?[0-9a-f]+;/gi, " ")
+    .replace(/&(?!hellip;|nbsp;|amp;|quot;|apos;|#039;|lt;|gt;)[a-z0-9#]+;/gi, " ")
+    .replace(/[ \t]+/g, " ")
+    .replace(/\n{3,}/g, "\n\n")
     .trim();
+}
+
+function normalizeExcerpt(html = "") {
+  const cleaned = decodeHtmlEntities(
+    stripHtml(html)
+      .replace(/\s+\.\.\./g, "...")
+      .replace(/\s+,/g, ",")
+      .replace(/\s+\./g, "."),
+  );
+
+  return cleaned
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .join("\n\n");
 }
 
 export async function wpFetch(query, { variables = {}, revalidate = 300, tags = [] } = {}) {
@@ -72,7 +107,7 @@ export async function getBlogPosts() {
 
   return (data?.posts?.nodes || []).map((post) => ({
     ...post,
-    excerptText: stripHtml(post.excerpt || ""),
+    excerptText: normalizeExcerpt(post.excerpt || ""),
     dateLabel: post.date ? new Date(post.date).toLocaleDateString("es-CO") : "",
   }));
 }

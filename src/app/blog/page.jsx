@@ -77,7 +77,9 @@ export default async function Blog() {
 									<div>
 										<p className="font-montserrat text-primary mb-0 small mb-2">{post.dateLabel}</p>
 										<h3 className="font-forum fs-5 text-primary text-uppercase">{post.title}</h3>
-										<p className="font-montserrat text-primary mb-0 small">{post.excerptText}</p>
+										<p className="font-montserrat text-primary mb-0 small" style={{ whiteSpace: "pre-line" }}>
+											{post.excerptText}
+										</p>
 									</div>
 								</div>
 							</Link>
