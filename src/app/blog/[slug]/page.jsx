@@ -1,11 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { posts } from "../posts";
+import { getBlogPostBySlug } from "../../../lib/wpgraphql";
 
 export default async function BlogPost({ params }) {
 	const { slug } = await params;
-	const post = posts.find((p) => p.slug === slug);
+	const post = await getBlogPostBySlug(slug);
 	if (!post) notFound();
 
 	return (
@@ -58,11 +58,14 @@ export default async function BlogPost({ params }) {
 					<div className="p-xl-3">
 						<div className="d-flex justify-content-center align-items-center mb-4 svgTriangulo">
 							<span className="d-inline-block border"></span>
-							<p className="d-flex align-items-center font-forum gap-2 text-primary small text-uppercase m-0">{post.date}</p>
+							<p className="d-flex align-items-center font-forum gap-2 text-primary small text-uppercase m-0">{post.dateLabel}</p>
 							<span className="d-inline-block border"></span>
 						</div>
 						<h1 className="font-forum text-primary text-uppercase mb-4 fs-1 text-center">{post.title}</h1>
-						<p className="font-montserrat text-primary mb-0">{post.fullDescription}</p>
+						<div
+							className="font-montserrat text-primary mb-0"
+							dangerouslySetInnerHTML={{ __html: post.content || "" }}
+						/>
 						<Link href="/blog" className="font-montserrat text-primary small text-uppercase d-inline-block mt-5">
 							← Volver al blog
 						</Link>

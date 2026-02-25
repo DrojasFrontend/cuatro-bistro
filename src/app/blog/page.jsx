@@ -1,8 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { posts } from "./posts";
+import { getBlogPosts } from "../../lib/wpgraphql";
 
-export default function Blog() {
+export default async function Blog() {
+	const posts = await getBlogPosts();
+
 	return (
 		<main className="position-relative overflow-hidden" style={{ height: "100vh" }}>
 			<div className="position-fixed top-0 start-0 w-100 h-100 object-fit-cover capa" style={{ opacity: 0.1 }}>
@@ -62,7 +64,7 @@ export default function Blog() {
 								<div className="col-12 col-xl-5">
 									<div className="d-block">
 										<Image
-											src="/images/kG0Xw2Nj7sB61VlucK8ZNwrs.webp"
+											src={post.featuredImage?.node?.sourceUrl || "/images/kG0Xw2Nj7sB61VlucK8ZNwrs.webp"}
 											alt={post.title}
 											width={400}
 											height={250}
@@ -73,9 +75,9 @@ export default function Blog() {
 								</div>
 								<div className="col-12 col-xl-7">
 									<div>
-										<p className="font-montserrat text-primary mb-0 small mb-2">{post.date}</p>
+										<p className="font-montserrat text-primary mb-0 small mb-2">{post.dateLabel}</p>
 										<h3 className="font-forum fs-5 text-primary text-uppercase">{post.title}</h3>
-										<p className="font-montserrat text-primary mb-0 small">{post.description}</p>
+										<p className="font-montserrat text-primary mb-0 small">{post.excerptText}</p>
 									</div>
 								</div>
 							</Link>
