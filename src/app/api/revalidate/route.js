@@ -22,6 +22,22 @@ function getSlugsFromBody(body) {
     .filter((value, index, list) => list.indexOf(value) === index);
 }
 
+function getPostTypeFromBody(body) {
+  if (!body || typeof body !== "object") return "";
+
+  const candidates = [
+    body.postType,
+    body.post_type,
+    body.post?.postType,
+    body.post?.post_type,
+    body.data?.postType,
+    body.data?.post_type,
+  ];
+
+  const value = candidates.find((candidate) => typeof candidate === "string" && candidate.trim().length > 0);
+  return value ? value.trim().toLowerCase() : "";
+}
+
 export async function POST(request) {
   const secret = request.nextUrl.searchParams.get("secret");
   const expectedSecret = process.env.REVALIDATE_SECRET;
@@ -42,17 +58,31 @@ export async function POST(request) {
   }
 
   const slugs = getSlugsFromBody(body);
+  const postType = getPostTypeFromBody(body);
 
-  revalidateTag("posts");
-  revalidatePath("/blog");
+  const shouldRevalidateBlog = !postType || postType === "post";
+  const shouldRevalidatePlatos = postType === "platos";
+
+  if (shouldRevalidateBlog) {
+    revalidateTag("posts");
+    revalidatePath("/blog");
+  }
+
+  if (shouldRevalidatePlatos) {
+    revalidateTag("platos");
+    revalidatePath("/menu");
+  }
 
   slugs.forEach((slug) => {
-    revalidateTag(`post:${slug}`);
-    revalidatePath(`/blog/${slug}`);
+    if (shouldRevalidateBlog) {
+      revalidateTag(`post:${slug}`);
+      revalidatePath(`/blog/${slug}`);
+    }
   });
 
   return NextResponse.json({
     revalidated: true,
+    postType: postType || "post",
     slugs,
     now: Date.now(),
   });
