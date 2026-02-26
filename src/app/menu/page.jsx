@@ -1,11 +1,19 @@
 import Image from "next/image";
 import ThemeHeaderNav from "../../components/ThemeHeaderNav";
+import Link from "next/link";
 import { getPlatos } from "../../lib/wpgraphql";
 import { menuItems } from "./items";
 
-export default async function Menu() {
-	const platos = await getPlatos();
-	const items = platos.length > 0 ? platos : menuItems;
+export default async function Menu({ searchParams }) {
+	const resolvedSearchParams = await searchParams;
+	const page = Number.parseInt(resolvedSearchParams?.page || "1", 10);
+	const { platos, pagination } = await getPlatos({ page, pageSize: 3 });
+	const useFallbackItems = platos.length === 0;
+	const totalPages = useFallbackItems ? Math.max(1, Math.ceil(menuItems.length / 3)) : pagination.totalPages;
+	const currentPage = useFallbackItems ? 1 : pagination.currentPage;
+	const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
+	const fallbackItems = menuItems.slice(0, 3);
+	const items = useFallbackItems ? fallbackItems : platos;
 
 	return (
 		<main className="position-relative overflow-hidden" style={{ height: "100vh" }}>
@@ -75,6 +83,33 @@ export default async function Menu() {
 								</div>
 							</div>
 						))}
+						<div className="d-flex justify-content-center align-items-center gap-2 mt-4 flex-wrap">
+							{!useFallbackItems && pagination.hasPrevPage ? (
+								<Link
+									href={`/menu?page=${pagination.currentPage - 1}`}
+									className="font-montserrat text-primary small text-uppercase py-1 px-2 border rounded-3 bg-black-50"
+								>
+									Anterior
+								</Link>
+							) : null}
+							{pages.map((pageNumber) => (
+								<Link
+									key={pageNumber}
+									href={`/menu?page=${pageNumber}`}
+									className={`font-montserrat text-primary small py-1 px-3 border rounded-3 ${pageNumber === currentPage ? "bg-black-50" : ""}`}
+								>
+									{pageNumber}
+								</Link>
+							))}
+							{!useFallbackItems && pagination.hasNextPage ? (
+								<Link
+									href={`/menu?page=${pagination.currentPage + 1}`}
+									className="font-montserrat text-primary small text-uppercase py-1 px-2 border rounded-3 bg-black-50"
+								>
+									Siguiente
+								</Link>
+							) : null}
+						</div>
 					</div>
 				</div>
 			</div>

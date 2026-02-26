@@ -257,7 +257,10 @@ export async function getThemeMenu() {
     .filter((item) => item.title);
 }
 
-export async function getPlatos() {
+export async function getPlatos({ page = 1, pageSize = 3 } = {}) {
+  const safePage = toPositiveInteger(page, 1);
+  const safePageSize = toPositiveInteger(pageSize, 3);
+
   const data = await wpFetch(
     `
       query Platos {
@@ -286,5 +289,23 @@ export async function getPlatos() {
     },
   );
 
-  return (data?.platos?.nodes || []).map(normalizePlato);
+  const allPlatos = (data?.platos?.nodes || []).map(normalizePlato);
+  const totalPlatos = allPlatos.length;
+  const totalPages = Math.max(1, Math.ceil(totalPlatos / safePageSize));
+  const currentPage = Math.min(safePage, totalPages);
+  const start = (currentPage - 1) * safePageSize;
+  const end = start + safePageSize;
+  const platos = allPlatos.slice(start, end);
+
+  return {
+    platos,
+    pagination: {
+      currentPage,
+      totalPages,
+      pageSize: safePageSize,
+      totalPlatos,
+      hasPrevPage: currentPage > 1,
+      hasNextPage: currentPage < totalPages,
+    },
+  };
 }
