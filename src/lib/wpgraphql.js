@@ -258,32 +258,76 @@ export async function getBlogPostBySlug(slug) {
 }
 
 export async function getThemeMenu() {
-  const data = await wpFetch(
-    `
-      query ThemeMenu {
-        themeOptions {
-          themeOptionsFields {
-            menuitems {
-              estilo
-              enlace {
-                title
-                url
-                target
-              }
+  const queryUsingMenuItems = `
+    query ThemeMenu {
+      themeOptions {
+        themeOptionsFields {
+          menuItems {
+            estilo
+            enlace {
+              title
+              url
+              target
+            }
+          }
+          menuItemsModal {
+            enlace {
+              title
+              url
+              target
             }
           }
         }
       }
-    `,
-    {
+    }
+  `;
+
+  const queryUsingMenuitems = `
+    query ThemeMenuLegacy {
+      themeOptions {
+        themeOptionsFields {
+          menuitems {
+            estilo
+            enlace {
+              title
+              url
+              target
+            }
+          }
+          menuItemsModal {
+            enlace {
+              title
+              url
+              target
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  let data;
+
+  try {
+    data = await wpFetch(queryUsingMenuItems, {
       revalidate: 300,
       tags: ["theme-options"],
-    },
-  );
+    });
+  } catch {
+    data = await wpFetch(queryUsingMenuitems, {
+      revalidate: 300,
+      tags: ["theme-options"],
+    });
+  }
 
-  return (data?.themeOptions?.themeOptionsFields?.menuitems || [])
-    .map(normalizeThemeMenuItem)
-    .filter((item) => item.title);
+  const fields = data?.themeOptions?.themeOptionsFields || {};
+  const headerRaw = fields?.menuItems || fields?.menuitems || [];
+  const modalRaw = fields?.menuItemsModal || [];
+
+  return {
+    headerItems: headerRaw.map(normalizeThemeMenuItem).filter((item) => item.title),
+    modalItems: modalRaw.map(normalizeThemeMenuItem).filter((item) => item.title),
+  };
 }
 
 export async function getPlatos({ page = 1, pageSize = 3 } = {}) {
