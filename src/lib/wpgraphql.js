@@ -379,7 +379,36 @@ export async function getHomeHeroGrid() {
   const data = await wpFetch(
     `
       query HomeHeroGrid {
-        page(id: "/", idType: URI) {
+        homeRoot: page(id: "/", idType: URI) {
+          id
+          componentes {
+            pageComponentsFields {
+              ... on ComponentesPageComponentsFieldsBloqueHeroGridLayout {
+                tituloPrincipal
+                imagenPrincipal {
+                  node {
+                    sourceUrl
+                    altText
+                  }
+                }
+                tarjetasSecundarias {
+                  enlace {
+                    target
+                    title
+                    url
+                  }
+                  imagen {
+                    node {
+                      sourceUrl
+                      altText
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        homeInicio: page(id: "/inicio", idType: URI) {
           id
           componentes {
             pageComponentsFields {
@@ -416,7 +445,8 @@ export async function getHomeHeroGrid() {
     },
   );
 
-  const components = data?.page?.componentes?.pageComponentsFields || [];
+  const selectedPage = data?.homeRoot || data?.homeInicio || null;
+  const components = selectedPage?.componentes?.pageComponentsFields || [];
   const hero = components.find(
     (component) => component?.tituloPrincipal || component?.imagenPrincipal || component?.tarjetasSecundarias,
   );
