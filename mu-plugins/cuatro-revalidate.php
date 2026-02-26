@@ -47,6 +47,26 @@ function cuatro_get_post_uri($post_id) {
 	return '/' . ltrim($uri, '/');
 }
 
+function cuatro_get_page_paths($post_id, $fallback_slug = '') {
+	$paths = array();
+	$uri = cuatro_get_post_uri($post_id);
+
+	if ($uri) {
+		$paths[] = $uri;
+	}
+
+	if ($fallback_slug) {
+		$paths[] = '/' . ltrim($fallback_slug, '/');
+	}
+
+	$front_page_id = (int) get_option('page_on_front');
+	if ($front_page_id > 0 && $front_page_id === (int) $post_id) {
+		$paths[] = '/';
+	}
+
+	return array_values(array_unique(array_filter($paths)));
+}
+
 /**
  * Publicación inicial o cambio de estado para Blog (post).
  */
@@ -74,12 +94,13 @@ add_action('save_post_page', function($post_id, $post, $update) {
 	if (cuatro_should_skip_post($post)) return;
 	if ($post->post_status !== 'publish') return;
 
-	$uri = cuatro_get_post_uri($post_id);
-	if (!$uri) return;
+	$paths = cuatro_get_page_paths($post_id, $post->post_name);
+	if (empty($paths)) return;
 
 	cuatro_send_revalidate(array(
 		'postType' => 'page',
-		'path'     => $uri,
+		'path'     => $paths[0],
+		'paths'    => $paths,
 		'slug'     => $post->post_name,
 		'event'    => $update ? 'updated' : 'published',
 	));
@@ -110,7 +131,8 @@ add_action('post_updated', function($post_id, $post_after, $post_before) {
 
 	$new_slug = $post_after->post_name;
 	$old_slug = $post_before && isset($post_before->post_name) ? $post_before->post_name : null;
-	$new_uri = $post_after->post_type === 'page' ? cuatro_get_post_uri($post_id) : null;
+	$new_paths = $post_after->post_type === 'page' ? cuatro_get_page_paths($post_id, $new_slug) : array();
+	$new_uri = $post_after->post_type === 'page' && !empty($new_paths) ? $new_paths[0] : null;
 	$old_uri = null;
 
 	if ($post_after->post_type === 'page' && $post_before && isset($post_before->post_name)) {
@@ -129,6 +151,9 @@ add_action('post_updated', function($post_id, $post_after, $post_before) {
 
 	if ($new_uri) {
 		$payload['path'] = $new_uri;
+	}
+	if (!empty($new_paths)) {
+		$payload['paths'] = $new_paths;
 	}
 
 	if ($old_uri && $old_uri !== $new_uri) {
@@ -154,9 +179,10 @@ add_action('before_delete_post', function($post_id) {
 		);
 
 		if ($post->post_type === 'page') {
-			$uri = cuatro_get_post_uri($post_id);
-			if ($uri) {
-				$payload['path'] = $uri;
+			$paths = cuatro_get_page_paths($post_id, $post->post_name);
+			if (!empty($paths)) {
+				$payload['path'] = $paths[0];
+				$payload['paths'] = $paths;
 			}
 		}
 
@@ -165,6 +191,7 @@ add_action('before_delete_post', function($post_id) {
 			'slug'     => $payload['slug'],
 			'event'    => $payload['event'],
 			'path'     => isset($payload['path']) ? $payload['path'] : null,
+			'paths'    => isset($payload['paths']) ? $payload['paths'] : array(),
 		));
 	}
 }, 10, 1);

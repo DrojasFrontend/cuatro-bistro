@@ -59,7 +59,7 @@ export default async function Nosotros() {
 									<div className={imageCol}>
 										<div className="position-relative capa d-block text-decoration-none" style={{ minHeight: "250px" }}>
 											<Image
-												src={componente.imageUrl || "/images/EKJJBnLQzSzsS1Sp8JrOMfZgkw.webp"}
+												src={componente.imageUrl || "/images/pagina-nosotros.webp"}
 												alt={componente.imageAlt || "Imagen de nosotros"}
 												fill
 												className="object-fit-cover rounded-4 overflow-hidden"

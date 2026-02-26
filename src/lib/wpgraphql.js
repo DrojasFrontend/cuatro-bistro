@@ -114,6 +114,22 @@ function normalizeNosotrosComponente(componente) {
   };
 }
 
+function normalizeHeroCard(card) {
+  const imageNode = card?.imagen?.node || null;
+  const link = card?.enlace || {};
+  const title = typeof link.title === "string" ? link.title.trim() : "";
+  const url = typeof link.url === "string" && link.url.trim() ? link.url.trim() : "#";
+  const target = typeof link.target === "string" ? link.target.trim() : "";
+
+  return {
+    title,
+    url,
+    target,
+    imageUrl: imageNode?.sourceUrl || null,
+    imageAlt: imageNode?.altText || title || "Tarjeta secundaria",
+  };
+}
+
 export async function wpFetch(query, { variables = {}, revalidate = 300, tags = [] } = {}) {
   if (!WPGRAPHQL_URL) {
     throw new Error("Missing WPGRAPHQL_URL. Add it to .env.local");
@@ -357,4 +373,62 @@ export async function getNosotrosComponentes() {
   return (data?.page?.componentes?.pageComponentsFields || [])
     .map(normalizeNosotrosComponente)
     .filter((item) => item.title || item.descriptionHtml || item.imageUrl);
+}
+
+export async function getHomeHeroGrid() {
+  const data = await wpFetch(
+    `
+      query HomeHeroGrid {
+        page(id: "/", idType: URI) {
+          id
+          componentes {
+            pageComponentsFields {
+              ... on ComponentesPageComponentsFieldsBloqueHeroGridLayout {
+                tituloPrincipal
+                imagenPrincipal {
+                  node {
+                    sourceUrl
+                    altText
+                  }
+                }
+                tarjetasSecundarias {
+                  enlace {
+                    target
+                    title
+                    url
+                  }
+                  imagen {
+                    node {
+                      sourceUrl
+                      altText
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    {
+      revalidate: 300,
+      tags: ["home", "pages"],
+    },
+  );
+
+  const components = data?.page?.componentes?.pageComponentsFields || [];
+  const hero = components.find(
+    (component) => component?.tituloPrincipal || component?.imagenPrincipal || component?.tarjetasSecundarias,
+  );
+
+  if (!hero) return null;
+
+  const mainImageNode = hero?.imagenPrincipal?.node || null;
+
+  return {
+    title: hero?.tituloPrincipal || "",
+    mainImageUrl: mainImageNode?.sourceUrl || null,
+    mainImageAlt: mainImageNode?.altText || "Imagen principal",
+    cards: (hero?.tarjetasSecundarias || []).map(normalizeHeroCard).filter((card) => card.title || card.imageUrl),
+  };
 }
