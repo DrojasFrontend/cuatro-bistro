@@ -462,3 +462,100 @@ export async function getHomeHeroGrid() {
     cards: (hero?.tarjetasSecundarias || []).map(normalizeHeroCard).filter((card) => card.title || card.imageUrl),
   };
 }
+
+function normalizeContactoGalleryImage(node = {}) {
+  return {
+    src: node?.sourceUrl || "",
+    alt: node?.altText || "Imagen de galeria",
+  };
+}
+
+function normalizeTarjetaLink(link = {}) {
+  const title = typeof link?.title === "string" ? link.title.trim() : "";
+  const url = typeof link?.url === "string" ? link.url.trim() : "";
+  const target = typeof link?.target === "string" ? link.target.trim() : "";
+
+  return { title, url, target };
+}
+
+function normalizeTarjetaItem(item = {}) {
+  return {
+    text: item?.texto?.trim?.() || "",
+    option: item?.opcion?.trim?.()?.toLowerCase() || "detalle",
+    detail: item?.detalle?.trim?.() || "",
+    link: normalizeTarjetaLink(item?.enlace || {}),
+  };
+}
+
+function normalizeTarjetaStyle(style = "") {
+  return typeof style === "string" ? style.trim().toLowerCase() : "";
+}
+
+export async function getContactoHorario() {
+  const data = await wpFetch(
+    `
+      query ContactoHorario {
+        page(id: "/contacto", idType: URI) {
+          id
+          title
+          componentes {
+            pageComponentsFields {
+              fieldGroupName
+              ... on ComponentesPageComponentsFieldsBloqueTarjetasLayout {
+                tituloPrincipal
+                itemsTarjetas {
+                  texto
+                  opcion
+                  detalle
+                  enlace {
+                    target
+                    title
+                    url
+                  }
+                }
+                estilo
+                galeria {
+                  nodes {
+                    altText
+                    sourceUrl
+                  }
+                }
+                mapa
+              }
+            }
+          }
+        }
+      }
+    `,
+    {
+      revalidate: 300,
+      tags: ["contacto", "pages"],
+    },
+  );
+
+  const page = data?.page || null;
+  const components = page?.componentes?.pageComponentsFields || [];
+  const cards = components.filter((component) => component?.fieldGroupName?.includes("BloqueTarjetasLayout"));
+  const normalizedCards = cards
+    .map((component, index) => ({
+      id: `${component?.fieldGroupName || "card"}-${index}`,
+      style: normalizeTarjetaStyle(component?.estilo),
+      title: component?.tituloPrincipal || "",
+      items: (component?.itemsTarjetas || [])
+        .map(normalizeTarjetaItem)
+        .filter((item) => item.text || item.detail || item.link.url),
+      galleryImages: (component?.galeria?.nodes || [])
+        .map(normalizeContactoGalleryImage)
+        .filter((image) => image.src),
+      mapEmbedHtml: component?.mapa?.trim?.() || "",
+    }))
+    .filter(
+      (card) =>
+        card.title || card.items.length > 0 || card.galleryImages.length > 0 || card.mapEmbedHtml,
+    );
+
+  return {
+    pageTitle: page?.title || "",
+    cards: normalizedCards,
+  };
+}

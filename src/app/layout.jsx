@@ -1,4 +1,5 @@
 import "./globals.css";
+import "yet-another-react-lightbox/styles.css";
 
 export const metadata = {
   title: "Cuatro Bistro",
