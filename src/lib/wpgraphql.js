@@ -73,6 +73,20 @@ function toPositiveInteger(value, fallback) {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 }
 
+function normalizeThemeMenuItem(item) {
+  const link = item?.enlace || {};
+  const title = typeof link.title === "string" ? link.title.trim() : "";
+  const url = typeof link.url === "string" && link.url.trim() ? link.url.trim() : "#";
+  const target = typeof link.target === "string" ? link.target.trim() : "";
+
+  return {
+    style: item?.estilo || "estilo_1",
+    title,
+    url,
+    target,
+  };
+}
+
 export async function wpFetch(query, { variables = {}, revalidate = 300, tags = [] } = {}) {
   if (!WPGRAPHQL_URL) {
     throw new Error("Missing WPGRAPHQL_URL. Add it to .env.local");
@@ -198,4 +212,33 @@ export async function getBlogPostBySlug(slug) {
     ...post,
     dateLabel: post.date ? new Date(post.date).toLocaleDateString("es-CO") : "",
   };
+}
+
+export async function getThemeMenu() {
+  const data = await wpFetch(
+    `
+      query ThemeMenu {
+        themeOptions {
+          themeOptionsFields {
+            menuitems {
+              estilo
+              enlace {
+                title
+                url
+                target
+              }
+            }
+          }
+        }
+      }
+    `,
+    {
+      revalidate: 300,
+      tags: ["theme-options"],
+    },
+  );
+
+  return (data?.themeOptions?.themeOptionsFields?.menuitems || [])
+    .map(normalizeThemeMenuItem)
+    .filter((item) => item.title);
 }

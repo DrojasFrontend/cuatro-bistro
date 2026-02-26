@@ -1,7 +1,22 @@
 import Image from "next/image";
 import Link from "next/link";
+import { getThemeMenu } from "../lib/wpgraphql";
 
-export default function Inicio() {
+function getMenuClasses(style) {
+	if (style === "estilo_2") {
+		return "font-montserrat text-primary small text-uppercase py-2 px-3 border rounded-3 bg-black-50";
+	}
+
+	return "font-montserrat text-primary small text-uppercase";
+}
+
+function isInternalUrl(url = "") {
+	return url.startsWith("/");
+}
+
+export default async function Inicio() {
+	const menuItems = await getThemeMenu();
+
 	return (
 		<main className="vh-100">
 			<div className="position-fixed top-0 start-0 w-100 h-100 object-fit-cover capa" style={{ opacity: 0.1 }}>
@@ -15,7 +30,7 @@ export default function Inicio() {
 			</div>
 			<section className="container-fluid p-3 h-100">
 				<div className="row m-0 p-0 g-3 h-100">
-					<div className="col-9 m-0 ps-0">
+					<div className="col-12 col-xl-9 m-0 ps-xl-0 pe-xl-2 px-0">
 						<div className="position-relative h-100 capa">
 							<Image
 								src="/images/10I4GJR5nYsUsYnoOPIDjoapkA.webp"
@@ -36,16 +51,32 @@ export default function Inicio() {
 									<Link href="/" className="font-montserrat text-primary small text-uppercase">
 										<Image src="/images/logo-cuatro-bistro-white.webp" alt="Logo" width={80} height={39} className="" quality={100} />
 									</Link>
-									<Link href="/nosotros" className="font-montserrat text-primary small text-uppercase">Nosotros</Link>
-									<Link href="/blog" className="font-forum text-primary text-uppercase">Blog</Link>
-									<a href="" className="font-montserrat text-primary small text-uppercase py-2 px-3 border rounded-3 bg-black-50">Reservar</a>
+									{menuItems.map((item) => {
+										const className = getMenuClasses(item.style);
+										const target = item.target || undefined;
+										const rel = target === "_blank" ? "noopener noreferrer" : undefined;
+
+										if (isInternalUrl(item.url) && target !== "_blank") {
+											return (
+												<Link key={`${item.title}-${item.url}`} href={item.url} className={className}>
+													{item.title}
+												</Link>
+											);
+										}
+
+										return (
+											<a key={`${item.title}-${item.url}`} href={item.url} target={target} rel={rel} className={className}>
+												{item.title}
+											</a>
+										);
+									})}
 								</div>
                 <h1 className="position-relative display-1 text-primary text-uppercase z-1">Cuatro <br /> Bistro</h1>
               </div>
 						</div>
 					</div>
-					<div className="col-3 m-0 pe-0">
-						<div className="d-flex flex-column justify-content-between h-100 gap-3">
+					<div className="col-12 col-xl-3 m-0 pe-0">
+						<div className="d-flex flex-xl-column justify-content-between h-100 gap-3 pt-xl-0 pt-3">
 							<Link href="/menu" className="position-relative flex-grow-1 capa d-block text-decoration-none">
 								<div className="borderRadius d-flex align-items-center pt-3 pb-2">
 									<span className="svgRight"></span>
