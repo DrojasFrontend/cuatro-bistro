@@ -101,6 +101,19 @@ function normalizePlato(plato) {
   };
 }
 
+function normalizeNosotrosComponente(componente) {
+  const imageNode = componente?.imagen?.node || null;
+
+  return {
+    type: componente?.fieldGroupName || "",
+    title: componente?.titulo || "",
+    descriptionHtml: componente?.descripcion || "",
+    imagePosition: componente?.posicionImagen || "derecha",
+    imageUrl: imageNode?.sourceUrl || null,
+    imageAlt: imageNode?.altText || "Imagen de nosotros",
+  };
+}
+
 export async function wpFetch(query, { variables = {}, revalidate = 300, tags = [] } = {}) {
   if (!WPGRAPHQL_URL) {
     throw new Error("Missing WPGRAPHQL_URL. Add it to .env.local");
@@ -308,4 +321,40 @@ export async function getPlatos({ page = 1, pageSize = 3 } = {}) {
       hasNextPage: currentPage < totalPages,
     },
   };
+}
+
+export async function getNosotrosComponentes() {
+  const data = await wpFetch(
+    `
+      query NosotrosComponentes {
+        page(id: "/nosotros", idType: URI) {
+          id
+          componentes {
+            pageComponentsFields {
+              fieldGroupName
+              ... on ComponentesPageComponentsFieldsBloqueImagenTextoLayout {
+                titulo
+                descripcion
+                posicionImagen
+                imagen {
+                  node {
+                    sourceUrl
+                    altText
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    {
+      revalidate: 300,
+      tags: ["nosotros", "pages"],
+    },
+  );
+
+  return (data?.page?.componentes?.pageComponentsFields || [])
+    .map(normalizeNosotrosComponente)
+    .filter((item) => item.title || item.descriptionHtml || item.imageUrl);
 }

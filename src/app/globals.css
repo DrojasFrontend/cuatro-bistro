@@ -165,3 +165,21 @@ h1, h2, h3, h4, h5, h6 {
 .dots {
   border-bottom: 2px dotted var(--bs-border-color);
 }
+
+.rich-text-content p {
+  margin-bottom: 0.75rem;
+}
+
+.rich-text-content p:last-child {
+  margin-bottom: 0;
+}
+
+.rich-text-content strong,
+.rich-text-content b {
+  font-weight: 700;
+}
+
+.rich-text-content a {
+  color: var(--bs-primary);
+  text-decoration: underline;
+}
