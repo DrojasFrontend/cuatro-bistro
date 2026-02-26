@@ -16,7 +16,7 @@ export default async function Menu({ searchParams }) {
 	const items = useFallbackItems ? fallbackItems : platos;
 
 	return (
-		<main className="position-relative overflow-hidden" style={{ height: "100vh" }}>
+		<main className="split-main position-relative">
 			<div className="position-fixed top-0 start-0 w-100 h-100 object-fit-cover capa" style={{ opacity: 0.1 }}>
 				<Image
 					src="/images/RAU19PL6ISblT8l98fG6ggBX9g.webp"
@@ -26,10 +26,7 @@ export default async function Menu({ searchParams }) {
 					quality={100}
 				/>
 			</div>
-			<div
-				className="position-fixed top-0 start-0 p-3 pe-0"
-				style={{ width: "50%", height: "100vh", zIndex: 10 }}
-			>
+			<div className="split-left-panel p-3 pe-xl-0 pb-xl-3 pb-0">
 				<div className="position-relative w-100 h-100 capa rounded-4 overflow-hidden" style={{ minHeight: "300px" }}>
 					<Image
 						src="/images/10I4GJR5nYsUsYnoOPIDjoapkA.webp"
@@ -38,17 +35,14 @@ export default async function Menu({ searchParams }) {
 						className="object-fit-cover"
 						quality={100}
 					/>
-					<div className="d-flex flex-column justify-content-between align-items-start position-absolute bottom-0 start-0 w-100 h-100 p-lg-5">
+					<div className="d-flex flex-column justify-content-between align-items-xl-start align-items-center position-absolute bottom-0 start-0 w-100 h-100 p-xxl-5 p-xl-4 p-3">
 						<ThemeHeaderNav />
 						<h1 className="position-relative display-1 text-primary text-uppercase z-1">Menú</h1>
 					</div>
 				</div>
 			</div>
-			<div
-				className="position-absolute top-0 h-100 overflow-y-auto scrollbar-hidden p-3"
-				style={{ width: "50%", left: "50%" }}
-			>
-				<div className="d-flex flex-column gap-3 p-5 border rounded-4">
+			<div className="split-right-panel scrollbar-hidden p-3">
+				<div className="d-flex flex-column gap-3 p-xl-5 p-3 border rounded-4">
 					<div className="p-xl-3">
 						<div className="d-flex justify-content-center align-items-center mb-4 svgTriangulo">
 							<span className="d-inline-block border"></span>
@@ -57,7 +51,7 @@ export default async function Menu({ searchParams }) {
 						</div>
 						{items.map((item, index) => (
 							<div key={index} className="row mb-5">
-								<div className="col-12 col-xl-5">
+								<div className="col-12 col-xl-5 mb-3 mb-xl-0">
 									<div className="d-block">
 										<Image
 											src={item.imageUrl || "/images/kG0Xw2Nj7sB61VlucK8ZNwrs.webp"}

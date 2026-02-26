@@ -6,7 +6,7 @@ export default async function Nosotros() {
 	const componentes = await getNosotrosComponentes();
 
 	return (
-		<main className="position-relative overflow-hidden" style={{ height: "100vh" }}>
+		<main className="split-main position-relative">
 			<div className="position-fixed top-0 start-0 w-100 h-100 object-fit-cover capa" style={{ opacity: 0.1 }}>
 				<Image
 					src="/images/RAU19PL6ISblT8l98fG6ggBX9g.webp"
@@ -16,10 +16,7 @@ export default async function Nosotros() {
 					quality={100}
 				/>
 			</div>
-			<div
-				className="position-fixed top-0 start-0 p-3 pe-0"
-				style={{ width: "50%", height: "100vh", zIndex: 10 }}
-			>
+			<div className="split-left-panel p-3 pe-xl-0 pb-xl-3 pb-0">
 				<div className="position-relative w-100 h-100 capa rounded-4 overflow-hidden" style={{ minHeight: "300px" }}>
 					<Image
 						src="/images/10I4GJR5nYsUsYnoOPIDjoapkA.webp"
@@ -28,25 +25,23 @@ export default async function Nosotros() {
 						className="object-fit-cover"
 						quality={100}
 					/>
-					<div className="d-flex flex-column justify-content-between align-items-start position-absolute bottom-0 start-0 w-100 h-100 p-lg-5">
+					<div className="d-flex flex-column justify-content-between align-items-xl-start align-items-center position-absolute bottom-0 start-0 w-100 h-100 p-xxl-5 p-xl-4 p-3">
 						<ThemeHeaderNav />
 						<h1 className="position-relative display-1 text-primary text-uppercase z-1">Nosotros</h1>
 					</div>
 				</div>
 			</div>
-			<div
-				className="position-absolute top-0 h-100 overflow-y-auto scrollbar-hidden p-3"
-				style={{ width: "50%", left: "50%" }}
-			>
+			<div className="split-right-panel scrollbar-hidden p-3">
 				<div className="d-flex flex-column gap-3">
 					{componentes.map((componente, index) => {
 						const isImageLeft = componente.imagePosition === "izquierda";
-						const textCol = isImageLeft ? "col-12 col-xl-7 order-2 order-xl-2" : "col-12 col-xl-7";
-						const imageCol = isImageLeft ? "col-12 col-xl-5 order-1 order-xl-1" : "col-12 col-xl-5";
+						const rowDirection = isImageLeft ? "flex-xl-row-reverse flex-column-reverse" : "flex-xl-row flex-column-reverse";
+						const textCol = "col-12 col-xl-7";
+						const imageCol = "col-12 col-xl-5 mb-3 mb-xl-0";
 
 						return (
 							<div key={`${componente.type}-${index}`}>
-								<div className="row">
+								<div className={`row d-flex flex-column ${rowDirection}`}>
 									<div className={textCol}>
 										<div className="p-4 border border rounded-4 h-100">
 											<h2 className="font-forum text-primary text-uppercase">{componente.title}</h2>

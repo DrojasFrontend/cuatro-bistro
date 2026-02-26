@@ -36,7 +36,7 @@ export default async function Inicio() {
 				];
 
 	return (
-		<main className="vh-100">
+		<main className="home-hero-page">
 			<div className="position-fixed top-0 start-0 w-100 h-100 object-fit-cover capa" style={{ opacity: 0.1 }}>
 				<Image
 					src="/images/RAU19PL6ISblT8l98fG6ggBX9g.webp"
@@ -46,10 +46,10 @@ export default async function Inicio() {
 					quality={100}
 				/>
 			</div>
-			<section className="container-fluid p-3 h-100">
-				<div className="row m-0 p-0 g-3 h-100">
+			<section className="home-hero-section container-fluid p-3">
+				<div className="home-hero-row row m-0 p-0 g-3">
 					<div className="col-12 col-xl-9 m-0 ps-xl-0 pe-xl-2 px-0">
-						<div className="position-relative h-100 capa">
+						<div className="home-hero-main position-relative capa">
 							<Image
 								src={heroMainImage}
 								alt={heroMainImageAlt}
@@ -57,14 +57,14 @@ export default async function Inicio() {
 								className="object-fit-cover rounded-4 overflow-hidden"
 								quality={100}
 							/>
-              <div className="d-flex flex-column justify-content-between align-items-start position-absolute bottom-0 start-0 w-100 h-100 p-lg-5">
+              <div className="d-flex flex-column justify-content-between align-items-xl-start align-items-center position-absolute bottom-0 start-0 w-100 h-100 p-xxl-5 p-xl-4 p-3">
 								<ThemeHeaderNav />
                 <h1 className="position-relative display-1 text-primary text-uppercase z-1" dangerouslySetInnerHTML={{ __html: heroTitle }} />
               </div>
 						</div>
 					</div>
-					<div className="col-12 col-xl-3 m-0 pe-0">
-						<div className="d-flex flex-xl-column justify-content-between h-100 gap-3 pt-xl-0 pt-3">
+					<div className="col-12 col-xl-3 m-0 px-0 ps-xl-2">
+						<div className="home-hero-cards d-flex flex-column justify-content-between gap-3 pt-xl-0 pt-3">
 							{cards.map((card, index) => {
 								const href = card.url || "#";
 								const target = card.target || undefined;
@@ -76,7 +76,7 @@ export default async function Inicio() {
 
 								if (href.startsWith("/") && target !== "_blank") {
 									return (
-										<Link key={key} href={href} className="position-relative flex-grow-1 capa d-block text-decoration-none">
+										<Link key={key} href={href} className="home-hero-card position-relative flex-grow-1 capa d-block text-decoration-none">
 											<div className="borderRadius d-flex align-items-center pt-3 pb-2">
 												<span className="svgRight"></span>
 												<span className="svgLeft"></span>
@@ -94,7 +94,7 @@ export default async function Inicio() {
 								}
 
 								return (
-									<a key={key} href={href} target={target} rel={rel} className="position-relative flex-grow-1 capa d-block text-decoration-none">
+									<a key={key} href={href} target={target} rel={rel} className="home-hero-card position-relative flex-grow-1 capa d-block text-decoration-none">
 										<div className="borderRadius d-flex align-items-center pt-3 pb-2">
 											<span className="svgRight"></span>
 											<span className="svgLeft"></span>

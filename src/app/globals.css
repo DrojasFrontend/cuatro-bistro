@@ -72,8 +72,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .display-1 {
-  font-size: 80px;
-  line-height: 80px;
+  font-size: 40px;
+  line-height: 40px;
 }
 
 .font-forum {
@@ -191,6 +191,54 @@ h1, h2, h3, h4, h5, h6 {
   border: 0;
 }
 
+.split-main {
+  min-height: 100vh;
+  overflow: visible;
+}
+
+.split-left-panel {
+  position: relative;
+  width: 100%;
+  height: auto;
+  z-index: 10;
+}
+
+.split-right-panel {
+  position: relative;
+  width: 100%;
+  left: 0;
+  height: auto;
+}
+
+@media (min-width: 1200px) {
+  .split-main {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .split-left-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100vh;
+  }
+
+  .split-right-panel {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 50%;
+    height: 100%;
+    overflow-y: auto;
+  }
+  
+  .display-1 {
+    font-size: 80px;
+    line-height: 80px;
+  }
+}
+
 .menu-hamburger-button {
   cursor: pointer;
 }
@@ -201,6 +249,44 @@ h1, h2, h3, h4, h5, h6 {
   opacity: 0;
   transform: translateY(14px);
   animation: menuItemFadeIn 380ms ease-out forwards;
+}
+
+@media (max-width: 1199.98px) {
+  .home-hero-page {
+    min-height: 100vh;
+    height: auto;
+  }
+
+  .home-hero-section,
+  .home-hero-row,
+  .home-hero-cards {
+    height: auto;
+  }
+
+  .home-hero-main {
+    aspect-ratio: 1 / 1.15;
+    width: 100%;
+  }
+
+  .home-hero-card {
+    flex: 0 0 auto !important;
+    aspect-ratio: 1.1 / 1;
+    width: 100%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .home-hero-page,
+  .home-hero-section,
+  .home-hero-row,
+  .home-hero-main,
+  .home-hero-cards {
+    height: 100%;
+  }
+
+  .home-hero-page {
+    height: 100vh;
+  }
 }
 
 @keyframes menuItemFadeIn {

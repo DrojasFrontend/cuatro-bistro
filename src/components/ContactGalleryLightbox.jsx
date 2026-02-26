@@ -28,7 +28,7 @@ export default function ContactGalleryLightbox({ images = [] }) {
 		<>
 			<div
 				className="d-grid gap-3 w-100 h-100"
-				style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gridAutoRows: "1fr" }}
+				style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gridAutoRows: "minmax(140px, 1fr)" }}
 			>
 				{normalizedImages.map((image, index) => (
 					<button
@@ -36,6 +36,7 @@ export default function ContactGalleryLightbox({ images = [] }) {
 						type="button"
 						onClick={() => setCurrentIndex(index)}
 						className="p-0 border-0 bg-transparent rounded-4 overflow-hidden h-100 w-100"
+						style={{ minHeight: "140px" }}
 						aria-label={`Abrir imagen ${index + 1} en pantalla completa`}
 					>
 						<div className="position-relative h-100 w-100">

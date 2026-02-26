@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 function isInternalUrl(url = "") {
 	return url.startsWith("/");
@@ -13,23 +13,11 @@ function getMenuClasses(style) {
 		return "font-montserrat text-primary small text-uppercase py-2 px-3 border rounded-3 bg-black-50";
 	}
 
-	return "font-montserrat text-primary small text-uppercase";
+	return "font-montserrat text-primary small text-uppercase d-none d-xl-inline-block";
 }
-
-const dummyItems = [
-	{ title: "Menu", url: "/menu", target: "" },
-	{ title: "Reservation", url: "#", target: "" },
-	{ title: "About", url: "/nosotros", target: "" },
-	{ title: "Contact", url: "/contacto", target: "" },
-	{ title: "Blog", url: "/blog", target: "" },
-];
 
 export default function ThemeHeaderNavClient({ menuItems = [], modalMenuItems = [] }) {
 	const [isOpen, setIsOpen] = useState(false);
-	const modalItems = useMemo(
-		() => (modalMenuItems?.length ? modalMenuItems : dummyItems),
-		[modalMenuItems],
-	);
 
 	return (
 		<>
@@ -84,7 +72,7 @@ export default function ThemeHeaderNavClient({ menuItems = [], modalMenuItems = 
 						</div>
 						<div className="modal-body d-flex align-items-center justify-content-center">
 							<nav className="d-flex flex-column align-items-center text-center gap-2">
-								{modalItems.map((item, index) => {
+								{modalMenuItems.map((item, index) => {
 									const target = item.target || undefined;
 									const rel = target === "_blank" ? "noopener noreferrer" : undefined;
 
