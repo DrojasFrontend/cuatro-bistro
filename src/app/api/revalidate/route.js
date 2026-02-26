@@ -22,6 +22,29 @@ function getSlugsFromBody(body) {
     .filter((value, index, list) => list.indexOf(value) === index);
 }
 
+function getPathsFromBody(body) {
+  if (!body || typeof body !== "object") return [];
+
+  const candidates = [
+    body.path,
+    body.uri,
+    body.oldPath,
+    body.oldUri,
+    body.post?.path,
+    body.post?.uri,
+    body.data?.path,
+    body.data?.uri,
+  ];
+
+  const pathsFromArray = Array.isArray(body.paths) ? body.paths : [];
+
+  return [...candidates, ...pathsFromArray]
+    .filter((value) => typeof value === "string" && value.trim().length > 0)
+    .map((value) => value.trim())
+    .map((value) => (value.startsWith("/") ? value : `/${value}`))
+    .filter((value, index, list) => list.indexOf(value) === index);
+}
+
 function getPostTypeFromBody(body) {
   if (!body || typeof body !== "object") return "";
 
@@ -58,10 +81,12 @@ export async function POST(request) {
   }
 
   const slugs = getSlugsFromBody(body);
+  const paths = getPathsFromBody(body);
   const postType = getPostTypeFromBody(body);
 
   const shouldRevalidateBlog = !postType || postType === "post";
   const shouldRevalidatePlatos = postType === "platos";
+  const shouldRevalidatePages = postType === "page";
 
   if (shouldRevalidateBlog) {
     revalidateTag("posts");
@@ -73,6 +98,10 @@ export async function POST(request) {
     revalidatePath("/menu");
   }
 
+  if (shouldRevalidatePages) {
+    revalidateTag("pages");
+  }
+
   slugs.forEach((slug) => {
     if (shouldRevalidateBlog) {
       revalidateTag(`post:${slug}`);
@@ -80,10 +109,18 @@ export async function POST(request) {
     }
   });
 
+  if (shouldRevalidatePages) {
+    const pagePaths = paths.length > 0 ? paths : slugs.map((slug) => `/${slug}`);
+    pagePaths.forEach((path) => {
+      revalidatePath(path);
+    });
+  }
+
   return NextResponse.json({
     revalidated: true,
     postType: postType || "post",
     slugs,
+    paths,
     now: Date.now(),
   });
 }
