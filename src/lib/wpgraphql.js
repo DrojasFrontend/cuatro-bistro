@@ -87,6 +87,20 @@ function normalizeThemeMenuItem(item) {
   };
 }
 
+function normalizePlato(plato) {
+  const excerptText = normalizeExcerpt(plato?.excerpt || "");
+  const contentText = normalizeExcerpt(plato?.content || "");
+
+  return {
+    id: plato?.id || "",
+    slug: plato?.slug || "",
+    title: plato?.title || "",
+    price: plato?.platoFields?.precio || "",
+    detail: excerptText || contentText,
+    imageUrl: plato?.featuredImage?.node?.sourceUrl || null,
+  };
+}
+
 export async function wpFetch(query, { variables = {}, revalidate = 300, tags = [] } = {}) {
   if (!WPGRAPHQL_URL) {
     throw new Error("Missing WPGRAPHQL_URL. Add it to .env.local");
@@ -241,4 +255,36 @@ export async function getThemeMenu() {
   return (data?.themeOptions?.themeOptionsFields?.menuitems || [])
     .map(normalizeThemeMenuItem)
     .filter((item) => item.title);
+}
+
+export async function getPlatos() {
+  const data = await wpFetch(
+    `
+      query Platos {
+        platos(first: 100, where: { status: PUBLISH }) {
+          nodes {
+            id
+            slug
+            title
+            excerpt
+            content
+            featuredImage {
+              node {
+                sourceUrl
+              }
+            }
+            platoFields {
+              precio
+            }
+          }
+        }
+      }
+    `,
+    {
+      revalidate: 300,
+      tags: ["platos"],
+    },
+  );
+
+  return (data?.platos?.nodes || []).map(normalizePlato);
 }

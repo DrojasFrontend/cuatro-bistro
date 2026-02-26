@@ -1,9 +1,12 @@
 import Image from "next/image";
-import Link from "next/link";
 import ThemeHeaderNav from "../../components/ThemeHeaderNav";
+import { getPlatos } from "../../lib/wpgraphql";
 import { menuItems } from "./items";
 
 export default async function Menu() {
+	const platos = await getPlatos();
+	const items = platos.length > 0 ? platos : menuItems;
+
 	return (
 		<main className="position-relative overflow-hidden" style={{ height: "100vh" }}>
 			<div className="position-fixed top-0 start-0 w-100 h-100 object-fit-cover capa" style={{ opacity: 0.1 }}>
@@ -44,12 +47,12 @@ export default async function Menu() {
 							<h2 className="d-flex align-items-center font-forum gap-2 text-primary text-uppercase m-0">Menú</h2>
 							<span className="d-inline-block border"></span>
 						</div>
-						{menuItems.map((item, index) => (
+						{items.map((item, index) => (
 							<div key={index} className="row mb-5">
 								<div className="col-12 col-xl-5">
 									<div className="d-block">
 										<Image
-											src="/images/kG0Xw2Nj7sB61VlucK8ZNwrs.webp"
+											src={item.imageUrl || "/images/kG0Xw2Nj7sB61VlucK8ZNwrs.webp"}
 											alt={item.title}
 											width={400}
 											height={250}
