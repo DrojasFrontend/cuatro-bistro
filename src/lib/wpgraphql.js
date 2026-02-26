@@ -57,6 +57,22 @@ function shortenExcerpt(text = "", maxLength = 220) {
   return `${safeCut}...`;
 }
 
+function normalizePost(post) {
+  const normalized = normalizeExcerpt(post.excerpt || "");
+  const firstParagraph = normalized.split("\n\n")[0] || normalized;
+
+  return {
+    ...post,
+    excerptText: shortenExcerpt(firstParagraph, 220),
+    dateLabel: post.date ? new Date(post.date).toLocaleDateString("es-CO") : "",
+  };
+}
+
+function toPositiveInteger(value, fallback) {
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
 export async function wpFetch(query, { variables = {}, revalidate = 300, tags = [] } = {}) {
   if (!WPGRAPHQL_URL) {
     throw new Error("Missing WPGRAPHQL_URL. Add it to .env.local");
@@ -85,11 +101,15 @@ export async function wpFetch(query, { variables = {}, revalidate = 300, tags = 
   return payload.data;
 }
 
-export async function getBlogPosts() {
+export async function getBlogPosts({ page = 1, pageSize = 3 } = {}) {
+  const safePage = toPositiveInteger(page, 1);
+  const safePageSize = toPositiveInteger(pageSize, 3);
+  const MAX_BLOG_POSTS = 120;
+
   const data = await wpFetch(
     `
-      query BlogPosts {
-        posts(first: 20, where: { status: PUBLISH }) {
+      query BlogPosts($first: Int!) {
+        posts(first: $first, where: { status: PUBLISH }) {
           nodes {
             id
             slug
@@ -111,19 +131,32 @@ export async function getBlogPosts() {
         }
       }
     `,
-    { revalidate: 300, tags: ["posts"] },
+    {
+      variables: { first: MAX_BLOG_POSTS },
+      revalidate: 300,
+      tags: ["posts"],
+    },
   );
 
-  return (data?.posts?.nodes || []).map((post) => {
-    const normalized = normalizeExcerpt(post.excerpt || "");
-    const firstParagraph = normalized.split("\n\n")[0] || normalized;
+  const allPosts = (data?.posts?.nodes || []).map(normalizePost);
+  const totalPosts = allPosts.length;
+  const totalPages = Math.max(1, Math.ceil(totalPosts / safePageSize));
+  const currentPage = Math.min(safePage, totalPages);
+  const start = (currentPage - 1) * safePageSize;
+  const end = start + safePageSize;
+  const posts = allPosts.slice(start, end);
 
-    return {
-      ...post,
-      excerptText: shortenExcerpt(firstParagraph, 220),
-      dateLabel: post.date ? new Date(post.date).toLocaleDateString("es-CO") : "",
-    };
-  });
+  return {
+    posts,
+    pagination: {
+      currentPage,
+      totalPages,
+      pageSize: safePageSize,
+      totalPosts,
+      hasPrevPage: currentPage > 1,
+      hasNextPage: currentPage < totalPages,
+    },
+  };
 }
 
 export async function getBlogPostBySlug(slug) {

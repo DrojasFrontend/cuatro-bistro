@@ -2,8 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { getBlogPosts } from "../../lib/wpgraphql";
 
-export default async function Blog() {
-	const posts = await getBlogPosts();
+export default async function Blog({ searchParams }) {
+	const resolvedSearchParams = await searchParams;
+	const page = Number.parseInt(resolvedSearchParams?.page || "1", 10);
+	const { posts, pagination } = await getBlogPosts({ page, pageSize: 3 });
+	const pages = Array.from({ length: pagination.totalPages }, (_, index) => index + 1);
 
 	return (
 		<main className="position-relative overflow-hidden" style={{ height: "100vh" }}>
@@ -84,6 +87,33 @@ export default async function Blog() {
 								</div>
 							</Link>
 						))}
+						<div className="d-flex justify-content-center align-items-center gap-2 mt-4 flex-wrap">
+							{pagination.hasPrevPage ? (
+								<Link
+									href={`/blog?page=${pagination.currentPage - 1}`}
+									className="font-montserrat text-primary small text-uppercase py-1 px-2 border rounded-3 bg-black-50"
+								>
+									Anterior
+								</Link>
+							) : null}
+							{pages.map((pageNumber) => (
+								<Link
+									key={pageNumber}
+									href={`/blog?page=${pageNumber}`}
+									className={`font-montserrat text-primary small py-1 px-3 border rounded-3 ${pageNumber === pagination.currentPage ? "bg-black-50" : ""}`}
+								>
+									{pageNumber}
+								</Link>
+							))}
+							{pagination.hasNextPage ? (
+								<Link
+									href={`/blog?page=${pagination.currentPage + 1}`}
+									className="font-montserrat text-primary small text-uppercase py-1 px-2 border rounded-3 bg-black-50"
+								>
+									Siguiente
+								</Link>
+							) : null}
+						</div>
 					</div>
 				</div>
 			</div>
