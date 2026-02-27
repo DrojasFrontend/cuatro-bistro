@@ -21,7 +21,8 @@
   /* Colores de bordes */
   --bs-border-color: #333330;
 
-
+  /* Swiper */
+  --swiper-navigation-size: 24px;
 }
 
 /* ═══════════════════════════════════════════════════════════ */
@@ -294,4 +295,20 @@ h1, h2, h3, h4, h5, h6 {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Swiper */
+.swiper-button-prev,
+.swiper-button-next {
+  width: 20px !important;
+  height: 20px !important;
+  color: var(--bs-primary) !important;
+}
+
+.swiper-pagination-bullet {
+  background: var(--bs-primary) !important;
+}
+
+.swiper-pagination-bullet-active {
+  background: var(--bs-primary) !important;
 }

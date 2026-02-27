@@ -1,13 +1,14 @@
 import Image from "next/image";
-import ThemeHeaderNav from "../../components/ThemeHeaderNav";
 import Link from "next/link";
-import { getPlatos } from "../../lib/wpgraphql";
+import SplitLeftPanelHero from "../../components/SplitLeftPanelHero";
+import { getPlatos, getThemeFeaturedImages } from "../../lib/wpgraphql";
 import { menuItems } from "./items";
 
 export default async function Menu({ searchParams }) {
 	const resolvedSearchParams = await searchParams;
 	const page = Number.parseInt(resolvedSearchParams?.page || "1", 10);
 	const { platos, pagination } = await getPlatos({ page, pageSize: 3 });
+	const featuredImages = await getThemeFeaturedImages();
 	const useFallbackItems = platos.length === 0;
 	const totalPages = useFallbackItems ? Math.max(1, Math.ceil(menuItems.length / 3)) : pagination.totalPages;
 	const currentPage = useFallbackItems ? 1 : pagination.currentPage;
@@ -26,21 +27,11 @@ export default async function Menu({ searchParams }) {
 					quality={100}
 				/>
 			</div>
-			<div className="split-left-panel p-3 pe-xl-0 pb-xl-3 pb-0">
-				<div className="position-relative w-100 h-100 capa rounded-4 overflow-hidden" style={{ minHeight: "300px" }}>
-					<Image
-						src="/images/10I4GJR5nYsUsYnoOPIDjoapkA.webp"
-						alt="Imagen de inicio"
-						fill
-						className="object-fit-cover"
-						quality={100}
-					/>
-					<div className="d-flex flex-column justify-content-between align-items-xl-start align-items-center position-absolute bottom-0 start-0 w-100 h-100 p-xxl-5 p-xl-4 p-3">
-						<ThemeHeaderNav />
-						<h1 className="position-relative display-1 text-primary text-uppercase z-1">Menú</h1>
-					</div>
-				</div>
-			</div>
+			<SplitLeftPanelHero
+				title="Menú"
+				imageSrc={featuredImages.menu.src || "/images/10I4GJR5nYsUsYnoOPIDjoapkA.webp"}
+				imageAlt={featuredImages.menu.alt || "Imagen destacada del menu"}
+			/>
 			<div className="split-right-panel scrollbar-hidden p-3">
 				<div className="d-flex flex-column gap-3 p-xl-5 p-3 border rounded-4">
 					<div className="p-xl-3">

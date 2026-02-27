@@ -1,11 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import NosotrosGallerySwiper from "../../components/NosotrosGallerySwiper";
-import ThemeHeaderNav from "../../components/ThemeHeaderNav";
+import SplitLeftPanelHero from "../../components/SplitLeftPanelHero";
 import { getNosotrosComponentes } from "../../lib/wpgraphql";
 
 export default async function Nosotros() {
-	const componentes = await getNosotrosComponentes();
+	const { componentes, featuredImage } = await getNosotrosComponentes();
 
 	return (
 		<main className="split-main position-relative">
@@ -18,21 +18,11 @@ export default async function Nosotros() {
 					quality={100}
 				/>
 			</div>
-			<div className="split-left-panel p-3 pe-xl-0 pb-xl-3 pb-0">
-				<div className="position-relative w-100 h-100 capa rounded-4 overflow-hidden" style={{ minHeight: "300px" }}>
-					<Image
-						src="/images/10I4GJR5nYsUsYnoOPIDjoapkA.webp"
-						alt="Imagen de inicio"
-						fill
-						className="object-fit-cover"
-						quality={100}
-					/>
-					<div className="d-flex flex-column justify-content-between align-items-xl-start align-items-center position-absolute bottom-0 start-0 w-100 h-100 p-xxl-5 p-xl-4 p-3">
-						<ThemeHeaderNav />
-						<h1 className="position-relative display-1 text-primary text-uppercase z-1">Nosotros</h1>
-					</div>
-				</div>
-			</div>
+			<SplitLeftPanelHero
+				title="Nosotros"
+				imageSrc={featuredImage?.src || "/images/10I4GJR5nYsUsYnoOPIDjoapkA.webp"}
+				imageAlt={featuredImage?.alt || "Imagen destacada de nosotros"}
+			/>
 			<div className="split-right-panel scrollbar-hidden p-3">
 				<div className="d-flex flex-column gap-3">
 					{componentes.map((componente, index) => {
@@ -59,7 +49,7 @@ export default async function Nosotros() {
 												<Link
 													href={componente.cta.url}
 													target={componente.cta.target || undefined}
-													className="font-montserrat text-primary small text-uppercase d-inline-block mt-3"
+													className="d-inline-block font-montserrat text-primary small text-uppercase py-2 px-3 border rounded-3 mt-3"
 												>
 													{componente.cta.title}
 												</Link>

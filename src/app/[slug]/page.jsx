@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import ThemeHeaderNav from "../../components/ThemeHeaderNav";
+import SplitLeftPanelHero from "../../components/SplitLeftPanelHero";
 import { getBlogPostBySlug } from "../../lib/wpgraphql";
 
 export default async function BlogPost({ params }) {
@@ -20,20 +20,7 @@ export default async function BlogPost({ params }) {
 					quality={100}
 				/>
 			</div>
-			<div className="split-left-panel p-3 pe-xl-0 pb-xl-3 pb-0">
-				<div className="position-relative w-100 h-100 capa rounded-4 overflow-hidden" style={{ minHeight: "300px" }}>
-					<Image
-						src="/images/10I4GJR5nYsUsYnoOPIDjoapkA.webp"
-						alt="Imagen de inicio"
-						fill
-						className="object-fit-cover"
-						quality={100}
-					/>
-					<div className="d-flex flex-column justify-content-between align-items-xl-start align-items-center position-absolute bottom-0 start-0 w-100 h-100 p-xxl-5 p-xl-4 p-3">
-						<ThemeHeaderNav />
-					</div>
-				</div>
-			</div>
+			<SplitLeftPanelHero imageAlt="Imagen del blog" />
 			<div className="split-right-panel scrollbar-hidden p-3">
 				<div className="d-flex flex-column gap-3 p-xl-5 p-3 border rounded-4">
 					<div className="p-xl-3">

@@ -109,6 +109,16 @@ function normalizeThemeMenuItem(item) {
   };
 }
 
+function normalizeOptionImage(image, fallbackAlt) {
+  const sourceUrl = image?.node?.sourceUrl || image?.sourceUrl || null;
+  const altText = image?.node?.altText || image?.altText || fallbackAlt;
+
+  return {
+    src: sourceUrl,
+    alt: altText || fallbackAlt,
+  };
+}
+
 function normalizePlato(plato) {
   const excerptText = normalizeExcerpt(plato?.excerpt || "");
   const contentText = normalizeExcerpt(plato?.content || "");
@@ -393,6 +403,67 @@ export async function getThemeMenu() {
   };
 }
 
+export async function getThemeFeaturedImages() {
+  const queryWithNode = `
+    query ThemeFeaturedImagesWithNode {
+      themeOptions {
+        themeOptionsFields {
+          destacadaBlog {
+            node {
+              sourceUrl
+              altText
+            }
+          }
+          destacadaMenu {
+            node {
+              sourceUrl
+              altText
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const queryDirect = `
+    query ThemeFeaturedImagesDirect {
+      themeOptions {
+        themeOptionsFields {
+          destacadaBlog {
+            sourceUrl
+            altText
+          }
+          destacadaMenu {
+            sourceUrl
+            altText
+          }
+        }
+      }
+    }
+  `;
+
+  let data;
+
+  try {
+    data = await wpFetch(queryWithNode, {
+      revalidate: 300,
+      tags: ["theme-options"],
+    });
+  } catch {
+    data = await wpFetch(queryDirect, {
+      revalidate: 300,
+      tags: ["theme-options"],
+    });
+  }
+
+  const fields = data?.themeOptions?.themeOptionsFields || {};
+
+  return {
+    blog: normalizeOptionImage(fields?.destacadaBlog, "Imagen destacada del blog"),
+    menu: normalizeOptionImage(fields?.destacadaMenu, "Imagen destacada del menu"),
+  };
+}
+
 export async function getPlatos({ page = 1, pageSize = 3 } = {}) {
   const safePage = toPositiveInteger(page, 1);
   const safePageSize = toPositiveInteger(pageSize, 3);
@@ -452,6 +523,12 @@ export async function getNosotrosComponentes() {
       query NosotrosComponentes {
         page(id: "/nosotros", idType: URI) {
           id
+          featuredImage {
+            node {
+              altText
+              sourceUrl
+            }
+          }
           componentes {
             pageComponentsFields {
               fieldGroupName
@@ -489,7 +566,7 @@ export async function getNosotrosComponentes() {
     },
   );
 
-  return (data?.page?.componentes?.pageComponentsFields || [])
+  const componentes = (data?.page?.componentes?.pageComponentsFields || [])
     .map(normalizeNosotrosComponente)
     .filter(
       (item) =>
@@ -499,6 +576,17 @@ export async function getNosotrosComponentes() {
         item.galleryImages.length > 0 ||
         item.cta.url,
     );
+
+  const featuredImageNode = data?.page?.featuredImage?.node || null;
+  const featuredImage = {
+    src: featuredImageNode?.sourceUrl || null,
+    alt: featuredImageNode?.altText || "Imagen de nosotros",
+  };
+
+  return {
+    featuredImage,
+    componentes,
+  };
 }
 
 export async function getHomeHeroGrid() {

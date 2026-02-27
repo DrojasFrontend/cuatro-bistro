@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import ThemeHeaderNav from "../../components/ThemeHeaderNav";
-import { getBlogPosts } from "../../lib/wpgraphql";
+import SplitLeftPanelHero from "../../components/SplitLeftPanelHero";
+import { getBlogPosts, getThemeFeaturedImages } from "../../lib/wpgraphql";
 
 export default async function Blog({ searchParams }) {
 	const resolvedSearchParams = await searchParams;
@@ -15,6 +15,7 @@ export default async function Blog({ searchParams }) {
 		pageSize: 3,
 		categorySlug: category,
 	});
+	const featuredImages = await getThemeFeaturedImages();
 	const pages = Array.from({ length: pagination.totalPages }, (_, index) => index + 1);
 	const buildBlogHref = (targetPage, targetCategory = selectedCategorySlug) => {
 		const params = new URLSearchParams();
@@ -35,21 +36,11 @@ export default async function Blog({ searchParams }) {
 					quality={100}
 				/>
 			</div>
-			<div className="split-left-panel p-3 pe-xl-0 pb-xl-3 pb-0">
-				<div className="position-relative w-100 h-100 capa rounded-4 overflow-hidden" style={{ minHeight: "300px" }}>
-					<Image
-						src="/images/10I4GJR5nYsUsYnoOPIDjoapkA.webp"
-						alt="Imagen de inicio"
-						fill
-						className="object-fit-cover"
-						quality={100}
-					/>
-					<div className="d-flex flex-column justify-content-between align-items-xl-start align-items-center position-absolute bottom-0 start-0 w-100 h-100 p-xxl-5 p-xl-4 p-3">
-						<ThemeHeaderNav />
-						<h1 className="position-relative display-1 text-primary text-uppercase z-1">Blog</h1>
-					</div>
-				</div>
-			</div>
+			<SplitLeftPanelHero
+				title="Blog"
+				imageSrc={featuredImages.blog.src || "/images/10I4GJR5nYsUsYnoOPIDjoapkA.webp"}
+				imageAlt={featuredImages.blog.alt || "Imagen destacada del blog"}
+			/>
 			<div className="split-right-panel scrollbar-hidden p-3">
 				<div className="d-flex flex-column gap-3 p-xl-5 p-3 border rounded-4">
 					<div className="p-xl-3">
