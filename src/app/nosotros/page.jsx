@@ -1,4 +1,6 @@
 import Image from "next/image";
+import Link from "next/link";
+import NosotrosGallerySwiper from "../../components/NosotrosGallerySwiper";
 import ThemeHeaderNav from "../../components/ThemeHeaderNav";
 import { getNosotrosComponentes } from "../../lib/wpgraphql";
 
@@ -36,8 +38,12 @@ export default async function Nosotros() {
 					{componentes.map((componente, index) => {
 						const isImageLeft = componente.imagePosition === "izquierda";
 						const rowDirection = isImageLeft ? "flex-xl-row-reverse flex-column-reverse" : "flex-xl-row flex-column-reverse";
-						const textCol = "col-12 col-xl-7";
+						const hasGallery = componente.showGallery && componente.galleryImages.length > 0;
+						const hasImage = Boolean(componente.imageUrl);
+						const hasMedia = hasGallery || hasImage;
+						const textCol = hasMedia ? "col-12 col-xl-7" : "col-12";
 						const imageCol = "col-12 col-xl-5 mb-3 mb-xl-0";
+						const hasCta = Boolean(componente.cta?.url && componente.cta?.title);
 
 						return (
 							<div key={`${componente.type}-${index}`}>
@@ -49,19 +55,38 @@ export default async function Nosotros() {
 												className="font-montserrat text-primary mb-0 small rich-text-content"
 												dangerouslySetInnerHTML={{ __html: componente.descriptionHtml || "" }}
 											/>
+											{hasCta ? (
+												<Link
+													href={componente.cta.url}
+													target={componente.cta.target || undefined}
+													className="font-montserrat text-primary small text-uppercase d-inline-block mt-3"
+												>
+													{componente.cta.title}
+												</Link>
+											) : null}
 										</div>
 									</div>
-									<div className={imageCol}>
-										<div className="position-relative capa d-block text-decoration-none" style={{ minHeight: "250px" }}>
-											<Image
-												src={componente.imageUrl || "/images/pagina-nosotros.webp"}
-												alt={componente.imageAlt || "Imagen de nosotros"}
-												fill
-												className="object-fit-cover rounded-4 overflow-hidden"
-												quality={100}
-											/>
+									{hasMedia ? (
+										<div className={imageCol}>
+											{hasGallery ? (
+												<NosotrosGallerySwiper
+													images={componente.galleryImages}
+													title={componente.title || "Galeria"}
+												/>
+											) : null}
+											{!hasGallery && hasImage ? (
+												<div className="position-relative capa d-block text-decoration-none" style={{ minHeight: "250px" }}>
+													<Image
+														src={componente.imageUrl}
+														alt={componente.imageAlt || "Imagen de nosotros"}
+														fill
+														className="object-fit-cover rounded-4 overflow-hidden"
+														quality={100}
+													/>
+												</div>
+											) : null}
 										</div>
-									</div>
+									) : null}
 								</div>
 							</div>
 						);

@@ -57,6 +57,28 @@ function shortenExcerpt(text = "", maxLength = 220) {
   return `${safeCut}...`;
 }
 
+function formatDateLabel(dateValue) {
+  if (!dateValue) return "";
+
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const parts = new Intl.DateTimeFormat("es-CO", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).formatToParts(date);
+
+  const day = parts.find((part) => part.type === "day")?.value || "";
+  const rawMonth = parts.find((part) => part.type === "month")?.value || "";
+  const year = parts.find((part) => part.type === "year")?.value || "";
+  const month = rawMonth.replace(".", "").toUpperCase();
+
+  if (!day || !month || !year) return "";
+
+  return `${month} ${day}, ${year}`;
+}
+
 function normalizePost(post) {
   const normalized = normalizeExcerpt(post.excerpt || "");
   const firstParagraph = normalized.split("\n\n")[0] || normalized;
@@ -64,7 +86,7 @@ function normalizePost(post) {
   return {
     ...post,
     excerptText: shortenExcerpt(firstParagraph, 220),
-    dateLabel: post.date ? new Date(post.date).toLocaleDateString("es-CO") : "",
+    dateLabel: formatDateLabel(post.date),
   };
 }
 
@@ -103,6 +125,19 @@ function normalizePlato(plato) {
 
 function normalizeNosotrosComponente(componente) {
   const imageNode = componente?.imagen?.node || null;
+  const galleryImages = (componente?.galeria?.nodes || [])
+    .map((node) => ({
+      src: node?.sourceUrl || "",
+      alt: node?.altText || "Imagen de nosotros",
+    }))
+    .filter((image) => image.src);
+  const galleryEnabledValue = componente?.carruselGaleria;
+  const isGalleryEnabled =
+    galleryEnabledValue === true ||
+    (typeof galleryEnabledValue === "string" &&
+      galleryEnabledValue.trim().toLowerCase() === "true");
+  const cta = normalizeTarjetaLink(componente?.cta || {});
+  const showGallery = isGalleryEnabled && galleryImages.length > 0;
 
   return {
     type: componente?.fieldGroupName || "",
@@ -110,7 +145,10 @@ function normalizeNosotrosComponente(componente) {
     descriptionHtml: componente?.descripcion || "",
     imagePosition: componente?.posicionImagen || "derecha",
     imageUrl: imageNode?.sourceUrl || null,
-    imageAlt: imageNode?.altText || "Imagen de nosotros",
+    imageAlt: imageNode?.altText || componente?.titulo || "Imagen de nosotros",
+    cta,
+    showGallery,
+    galleryImages,
   };
 }
 
@@ -158,9 +196,11 @@ export async function wpFetch(query, { variables = {}, revalidate = 300, tags = 
   return payload.data;
 }
 
-export async function getBlogPosts({ page = 1, pageSize = 3 } = {}) {
+export async function getBlogPosts({ page = 1, pageSize = 3, categorySlug = "" } = {}) {
   const safePage = toPositiveInteger(page, 1);
   const safePageSize = toPositiveInteger(pageSize, 3);
+  const safeCategorySlug =
+    typeof categorySlug === "string" ? categorySlug.trim().toLowerCase() : "";
   const MAX_BLOG_POSTS = 120;
 
   const data = await wpFetch(
@@ -196,15 +236,38 @@ export async function getBlogPosts({ page = 1, pageSize = 3 } = {}) {
   );
 
   const allPosts = (data?.posts?.nodes || []).map(normalizePost);
-  const totalPosts = allPosts.length;
+  const categoriesMap = new Map();
+
+  allPosts.forEach((post) => {
+    (post?.categories?.nodes || []).forEach((category) => {
+      const slug = typeof category?.slug === "string" ? category.slug.trim().toLowerCase() : "";
+      const name = typeof category?.name === "string" ? category.name.trim() : "";
+      if (!slug || !name || categoriesMap.has(slug)) return;
+      categoriesMap.set(slug, { slug, name });
+    });
+  });
+
+  const filteredPosts = safeCategorySlug
+    ? allPosts.filter((post) =>
+        (post?.categories?.nodes || []).some(
+          (category) =>
+            (typeof category?.slug === "string" ? category.slug.trim().toLowerCase() : "") ===
+            safeCategorySlug,
+        ),
+      )
+    : allPosts;
+
+  const totalPosts = filteredPosts.length;
   const totalPages = Math.max(1, Math.ceil(totalPosts / safePageSize));
   const currentPage = Math.min(safePage, totalPages);
   const start = (currentPage - 1) * safePageSize;
   const end = start + safePageSize;
-  const posts = allPosts.slice(start, end);
+  const posts = filteredPosts.slice(start, end);
 
   return {
     posts,
+    categories: Array.from(categoriesMap.values()),
+    selectedCategorySlug: safeCategorySlug,
     pagination: {
       currentPage,
       totalPages,
@@ -253,7 +316,7 @@ export async function getBlogPostBySlug(slug) {
 
   return {
     ...post,
-    dateLabel: post.date ? new Date(post.date).toLocaleDateString("es-CO") : "",
+    dateLabel: formatDateLabel(post.date),
   };
 }
 
@@ -402,6 +465,18 @@ export async function getNosotrosComponentes() {
                     altText
                   }
                 }
+                cta {
+                  target
+                  title
+                  url
+                }
+                carruselGaleria
+                galeria {
+                  nodes {
+                    altText
+                    sourceUrl
+                  }
+                }
               }
             }
           }
@@ -416,7 +491,14 @@ export async function getNosotrosComponentes() {
 
   return (data?.page?.componentes?.pageComponentsFields || [])
     .map(normalizeNosotrosComponente)
-    .filter((item) => item.title || item.descriptionHtml || item.imageUrl);
+    .filter(
+      (item) =>
+        item.title ||
+        item.descriptionHtml ||
+        item.imageUrl ||
+        item.galleryImages.length > 0 ||
+        item.cta.url,
+    );
 }
 
 export async function getHomeHeroGrid() {

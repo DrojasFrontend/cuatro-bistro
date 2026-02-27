@@ -6,8 +6,23 @@ import { getBlogPosts } from "../../lib/wpgraphql";
 export default async function Blog({ searchParams }) {
 	const resolvedSearchParams = await searchParams;
 	const page = Number.parseInt(resolvedSearchParams?.page || "1", 10);
-	const { posts, pagination } = await getBlogPosts({ page, pageSize: 3 });
+	const category =
+		typeof resolvedSearchParams?.category === "string"
+			? resolvedSearchParams.category.trim().toLowerCase()
+			: "";
+	const { posts, categories, selectedCategorySlug, pagination } = await getBlogPosts({
+		page,
+		pageSize: 3,
+		categorySlug: category,
+	});
 	const pages = Array.from({ length: pagination.totalPages }, (_, index) => index + 1);
+	const buildBlogHref = (targetPage, targetCategory = selectedCategorySlug) => {
+		const params = new URLSearchParams();
+		if (targetPage > 1) params.set("page", String(targetPage));
+		if (targetCategory) params.set("category", targetCategory);
+		const queryString = params.toString();
+		return queryString ? `/blog?${queryString}` : "/blog";
+	};
 
 	return (
 		<main className="split-main position-relative">
@@ -43,8 +58,21 @@ export default async function Blog({ searchParams }) {
 							<h2 className="d-flex align-items-center font-forum gap-2 text-primary text-uppercase m-0">Últimas noticias</h2>
 							<span className="d-inline-block border"></span>
 						</div>
+						{categories.length > 0 ? (
+							<div className="d-flex justify-content-center align-items-center gap-2 mb-4 flex-wrap">
+								{categories.map((item) => (
+									<Link
+										key={item.slug}
+										href={buildBlogHref(1, item.slug)}
+										className={`font-montserrat text-primary small text-uppercase py-1 px-2 border rounded-3 text-decoration-none ${item.slug === selectedCategorySlug ? "bg-black-50" : ""}`}
+									>
+										{item.name}
+									</Link>
+								))}
+							</div>
+						) : null}
 						{posts.map((post) => (
-							<Link key={post.slug} href={`/blog/${post.slug}`} className="row mb-5 text-decoration-none">
+							<Link key={post.slug} href={`/${post.slug}`} className="row mb-5 text-decoration-none">
 								<div className="col-12 col-xl-5 mb-3 mb-xl-0">
 									<div className="d-block">
 										<Image
@@ -68,10 +96,13 @@ export default async function Blog({ searchParams }) {
 								</div>
 							</Link>
 						))}
+						{posts.length === 0 ? (
+							<p className="font-montserrat text-primary text-center mb-4">No hay publicaciones para esta categoría.</p>
+						) : null}
 						<div className="d-flex justify-content-center align-items-center gap-2 mt-4 flex-wrap">
 							{pagination.hasPrevPage ? (
 								<Link
-									href={`/blog?page=${pagination.currentPage - 1}`}
+									href={buildBlogHref(pagination.currentPage - 1)}
 									className="font-montserrat text-primary small text-uppercase py-1 px-2 border rounded-3 bg-black-50"
 								>
 									Anterior
@@ -80,7 +111,7 @@ export default async function Blog({ searchParams }) {
 							{pages.map((pageNumber) => (
 								<Link
 									key={pageNumber}
-									href={`/blog?page=${pageNumber}`}
+									href={buildBlogHref(pageNumber)}
 									className={`font-montserrat text-primary small py-1 px-3 border rounded-3 ${pageNumber === pagination.currentPage ? "bg-black-50" : ""}`}
 								>
 									{pageNumber}
@@ -88,7 +119,7 @@ export default async function Blog({ searchParams }) {
 							))}
 							{pagination.hasNextPage ? (
 								<Link
-									href={`/blog?page=${pagination.currentPage + 1}`}
+									href={buildBlogHref(pagination.currentPage + 1)}
 									className="font-montserrat text-primary small text-uppercase py-1 px-2 border rounded-3 bg-black-50"
 								>
 									Siguiente
