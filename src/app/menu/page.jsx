@@ -42,19 +42,21 @@ export default async function Menu({ searchParams }) {
 						</div>
 						{items.map((item, index) => (
 							<div key={index} className="row mb-5">
-								<div className="col-12 col-xl-5 mb-3 mb-xl-0">
-									<div className="d-block">
-										<Image
-											src={item.imageUrl || "/images/kG0Xw2Nj7sB61VlucK8ZNwrs.webp"}
-											alt={item.title}
-											width={400}
-											height={250}
-											className="rounded-4 w-100 h-auto"
-											quality={100}
-										/>
+								{item.imageUrl ? (
+									<div className="col-12 col-xl-5 mb-3 mb-xl-0">
+										<div className="d-block">
+											<Image
+												src={item.imageUrl}
+												alt={item.title}
+												width={400}
+												height={250}
+												className="rounded-4 w-100 h-auto"
+												quality={100}
+											/>
+										</div>
 									</div>
-								</div>
-								<div className="col-12 col-xl-7">
+								) : null}
+								<div className={item.imageUrl ? "col-12 col-xl-7" : "col-12"}>
 									<div className="d-flex flex-column gap-2">
 										<div className="d-flex align-items-start w-100 gap-2">
 											<div className="d-flex align-items-center flex-grow-1 gap-2">
