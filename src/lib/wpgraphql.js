@@ -122,6 +122,13 @@ function normalizeOptionImage(image, fallbackAlt) {
 function normalizePlato(plato) {
   const excerptText = normalizeExcerpt(plato?.excerpt || "");
   const contentText = normalizeExcerpt(plato?.content || "");
+  const categories = (plato?.categoriasPlato?.nodes || [])
+    .map((category) => {
+      const slug = typeof category?.slug === "string" ? category.slug.trim().toLowerCase() : "";
+      const name = typeof category?.name === "string" ? category.name.trim() : "";
+      return { slug, name };
+    })
+    .filter((category) => category.slug && category.name);
 
   return {
     id: plato?.id || "",
@@ -130,6 +137,7 @@ function normalizePlato(plato) {
     price: plato?.platoFields?.precio || "",
     detail: excerptText || contentText,
     imageUrl: plato?.featuredImage?.node?.sourceUrl || null,
+    categories,
   };
 }
 
@@ -464,9 +472,11 @@ export async function getThemeFeaturedImages() {
   };
 }
 
-export async function getPlatos({ page = 1, pageSize = 3 } = {}) {
+export async function getPlatos({ page = 1, pageSize = 3, categorySlug = "" } = {}) {
   const safePage = toPositiveInteger(page, 1);
   const safePageSize = toPositiveInteger(pageSize, 3);
+  const safeCategorySlug =
+    typeof categorySlug === "string" ? categorySlug.trim().toLowerCase() : "";
 
   const data = await wpFetch(
     `
@@ -486,6 +496,12 @@ export async function getPlatos({ page = 1, pageSize = 3 } = {}) {
             platoFields {
               precio
             }
+            categoriasPlato {
+              nodes {
+                name
+                slug
+              }
+            }
           }
         }
       }
@@ -497,15 +513,34 @@ export async function getPlatos({ page = 1, pageSize = 3 } = {}) {
   );
 
   const allPlatos = (data?.platos?.nodes || []).map(normalizePlato);
-  const totalPlatos = allPlatos.length;
+  const categoriesMap = new Map();
+
+  allPlatos.forEach((plato) => {
+    plato.categories.forEach((category) => {
+      if (categoriesMap.has(category.slug)) return;
+      categoriesMap.set(category.slug, category);
+    });
+  });
+
+  const filteredPlatos = safeCategorySlug
+    ? allPlatos.filter((plato) =>
+        plato.categories.some((category) => category.slug === safeCategorySlug),
+      )
+    : allPlatos;
+
+  const totalPlatos = filteredPlatos.length;
   const totalPages = Math.max(1, Math.ceil(totalPlatos / safePageSize));
   const currentPage = Math.min(safePage, totalPages);
   const start = (currentPage - 1) * safePageSize;
   const end = start + safePageSize;
-  const platos = allPlatos.slice(start, end);
+  const platos = filteredPlatos.slice(start, end);
+  const categories = Array.from(categoriesMap.values());
+  const selectedCategory = categories.find((category) => category.slug === safeCategorySlug) || null;
 
   return {
     platos,
+    categories,
+    selectedCategory,
     pagination: {
       currentPage,
       totalPages,

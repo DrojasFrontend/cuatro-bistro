@@ -64,4 +64,27 @@ add_action('init', function () {
 		'rewrite'             => ['slug' => 'platos'],
 		'show_in_nav_menus'   => true,
 	]);
+
+	register_taxonomy('categoria_plato', ['platos'], [
+		'labels' => [
+			'name'              => 'Categorias de Platos',
+			'singular_name'     => 'Categoria de Plato',
+			'search_items'      => 'Buscar categorias',
+			'all_items'         => 'Todas las categorias',
+			'edit_item'         => 'Editar categoria',
+			'update_item'       => 'Actualizar categoria',
+			'add_new_item'      => 'Anadir nueva categoria',
+			'new_item_name'     => 'Nombre de nueva categoria',
+			'menu_name'         => 'Categorias',
+		],
+		'public'               => true,
+		'hierarchical'         => true,
+		'show_ui'              => true,
+		'show_admin_column'    => true,
+		'show_in_rest'         => true,
+		'show_in_graphql'      => true,
+		'graphql_single_name'  => 'categoriaPlato',
+		'graphql_plural_name'  => 'categoriasPlato',
+		'rewrite'              => ['slug' => 'categoria-plato'],
+	]);
 });
