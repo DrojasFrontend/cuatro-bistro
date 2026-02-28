@@ -8,6 +8,8 @@ import {
 } from "../../lib/wpgraphql";
 import { menuItems } from "./items";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata() {
 	const seoData = await getPageSeoByUri("/menu");
 	return buildMetadataFromSeo(seoData, {

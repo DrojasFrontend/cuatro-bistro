@@ -7,6 +7,8 @@ import {
 	getPageSeoByUri,
 } from "../../lib/wpgraphql";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata() {
 	const seoData = await getPageSeoByUri("/cotiza-tus-eventos");
 	return buildMetadataFromSeo(seoData, {

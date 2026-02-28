@@ -12,7 +12,12 @@ export default async function sitemap() {
 		{ url: "/cotiza-tus-eventos", changeFrequency: "weekly", priority: 0.8 },
 	];
 
-	const dynamicEntries = await getSitemapEntries();
+	let dynamicEntries = [];
+	try {
+		dynamicEntries = await getSitemapEntries();
+	} catch {
+		dynamicEntries = [];
+	}
 
 	const merged = new Map();
 

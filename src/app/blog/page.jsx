@@ -8,6 +8,8 @@ import {
 	getThemeFeaturedImages,
 } from "../../lib/wpgraphql";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata() {
 	const seoData = await getPageSeoByUri("/blog");
 	return buildMetadataFromSeo(seoData, {

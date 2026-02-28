@@ -3,6 +3,8 @@ import Link from "next/link";
 import ThemeHeaderNav from "../components/ThemeHeaderNav";
 import { buildMetadataFromSeo, getHomeHeroGrid, getPageSeoByUri } from "../lib/wpgraphql";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata() {
 	const seoData = await getPageSeoByUri("/inicio");
 	return buildMetadataFromSeo(seoData, {
