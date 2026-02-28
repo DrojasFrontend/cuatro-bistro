@@ -110,7 +110,7 @@ export default async function Blog({ searchParams }) {
 							{pagination.hasPrevPage ? (
 								<Link
 									href={buildBlogHref(pagination.currentPage - 1)}
-									className="font-montserrat text-primary small text-uppercase py-1 px-2 border rounded-3 bg-black-50"
+									className="font-montserrat text-primary small text-uppercase py-1 px-2 border rounded-3 bg-black-50 text-decoration-none"
 								>
 									Anterior
 								</Link>
@@ -119,7 +119,7 @@ export default async function Blog({ searchParams }) {
 								<Link
 									key={pageNumber}
 									href={buildBlogHref(pageNumber)}
-									className={`font-montserrat text-primary small py-1 px-3 border rounded-3 ${pageNumber === pagination.currentPage ? "bg-black-50" : ""}`}
+									className={`font-montserrat text-primary small py-1 px-3 border rounded-3 text-decoration-none ${pageNumber === pagination.currentPage ? "bg-black-50" : ""}`}
 								>
 									{pageNumber}
 								</Link>
@@ -127,7 +127,7 @@ export default async function Blog({ searchParams }) {
 							{pagination.hasNextPage ? (
 								<Link
 									href={buildBlogHref(pagination.currentPage + 1)}
-									className="font-montserrat text-primary small text-uppercase py-1 px-2 border rounded-3 bg-black-50"
+									className="font-montserrat text-primary small text-uppercase py-1 px-2 border rounded-3 bg-black-50 text-decoration-none"
 								>
 									Siguiente
 								</Link>

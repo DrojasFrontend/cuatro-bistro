@@ -517,12 +517,9 @@ export async function getBlogPostBySlug(slug) {
     ...post,
     content: normalizeInternalLinksInHtml(post.content || ""),
     singleFeaturedImageUrl:
-      post?.entradas?.imagenDestacada?.node?.sourceUrl ||
-      post?.featuredImage?.node?.sourceUrl ||
-      null,
+      post?.entradas?.imagenDestacada?.node?.sourceUrl || null,
     singleFeaturedImageAlt:
       post?.entradas?.imagenDestacada?.node?.altText ||
-      post?.featuredImage?.node?.altText ||
       post?.title ||
       "Imagen destacada del post",
     dateLabel: formatDateLabel(post.date),

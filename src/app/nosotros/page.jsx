@@ -64,7 +64,7 @@ export default async function Nosotros() {
 												<Link
 													href={componente.cta.url}
 													target={componente.cta.target || undefined}
-													className="d-inline-block font-montserrat text-primary small text-uppercase py-2 px-3 border rounded-3 mt-3"
+													className="d-inline-block font-montserrat text-primary small text-uppercase py-2 px-3 border rounded-3 mt-3 text-decoration-none"
 												>
 													{componente.cta.title}
 												</Link>

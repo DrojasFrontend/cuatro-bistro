@@ -35,7 +35,7 @@ export default async function BlogPost({ params }) {
 				/>
 			</div>
 			<SplitLeftPanelHero
-				imageSrc={post.singleFeaturedImageUrl || "/images/10I4GJR5nYsUsYnoOPIDjoapkA.webp"}
+				imageSrc={post.singleFeaturedImageUrl || "/images/post-sin-imagen.webp"}
 				imageAlt={post.singleFeaturedImageAlt || "Imagen del blog"}
 			/>
 			<div className="split-right-panel scrollbar-hidden p-3">
