@@ -34,7 +34,10 @@ export default async function BlogPost({ params }) {
 					quality={100}
 				/>
 			</div>
-			<SplitLeftPanelHero imageAlt="Imagen del blog" />
+			<SplitLeftPanelHero
+				imageSrc={post.singleFeaturedImageUrl || "/images/10I4GJR5nYsUsYnoOPIDjoapkA.webp"}
+				imageAlt={post.singleFeaturedImageAlt || "Imagen del blog"}
+			/>
 			<div className="split-right-panel scrollbar-hidden p-3">
 				<div className="d-flex flex-column gap-3 p-xl-5 p-3 border rounded-4">
 					<div className="p-xl-3">

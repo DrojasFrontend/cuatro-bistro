@@ -160,6 +160,62 @@ function toSiteCanonical(urlOrPath = "") {
   }
 }
 
+function getInternalHostnames() {
+  const hostnames = new Set();
+
+  try {
+    const siteHostname = new URL(SITE_URL).hostname;
+    hostnames.add(siteHostname);
+    if (siteHostname.startsWith("www.")) {
+      hostnames.add(siteHostname.replace(/^www\./, ""));
+    } else {
+      hostnames.add(`www.${siteHostname}`);
+    }
+  } catch {}
+
+  try {
+    hostnames.add(new URL(WPGRAPHQL_URL).hostname);
+  } catch {}
+
+  return hostnames;
+}
+
+function normalizeInternalLinksInHtml(html = "") {
+  if (!html) return "";
+
+  const internalHostnames = getInternalHostnames();
+
+  return html.replace(/href=(["'])(.*?)\1/gi, (fullMatch, quote, hrefValue) => {
+    const href = String(hrefValue || "").trim();
+    if (!href) return fullMatch;
+
+    const lowerHref = href.toLowerCase();
+    if (
+      href.startsWith("/") ||
+      href.startsWith("#") ||
+      lowerHref.startsWith("mailto:") ||
+      lowerHref.startsWith("tel:") ||
+      lowerHref.startsWith("javascript:")
+    ) {
+      return fullMatch;
+    }
+
+    let parsedUrl;
+    try {
+      parsedUrl = new URL(href);
+    } catch {
+      return fullMatch;
+    }
+
+    if (!internalHostnames.has(parsedUrl.hostname)) {
+      return fullMatch;
+    }
+
+    const relativeHref = `${parsedUrl.pathname || "/"}${parsedUrl.search}${parsedUrl.hash}`;
+    return `href=${quote}${relativeHref}${quote}`;
+  });
+}
+
 function normalizePlato(plato) {
   const excerptText = normalizeExcerpt(plato?.excerpt || "");
   const contentText = normalizeExcerpt(plato?.content || "");
@@ -408,6 +464,15 @@ export async function getBlogPostBySlug(slug) {
           featuredImage {
             node {
               sourceUrl
+              altText
+            }
+          }
+          entradas {
+            imagenDestacada {
+              node {
+                sourceUrl
+                altText
+              }
             }
           }
           categories {
@@ -450,6 +515,16 @@ export async function getBlogPostBySlug(slug) {
 
   return {
     ...post,
+    content: normalizeInternalLinksInHtml(post.content || ""),
+    singleFeaturedImageUrl:
+      post?.entradas?.imagenDestacada?.node?.sourceUrl ||
+      post?.featuredImage?.node?.sourceUrl ||
+      null,
+    singleFeaturedImageAlt:
+      post?.entradas?.imagenDestacada?.node?.altText ||
+      post?.featuredImage?.node?.altText ||
+      post?.title ||
+      "Imagen destacada del post",
     dateLabel: formatDateLabel(post.date),
   };
 }
