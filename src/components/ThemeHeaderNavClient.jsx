@@ -10,10 +10,10 @@ function isInternalUrl(url = "") {
 
 function getMenuClasses(style) {
 	if (style === "estilo_2") {
-		return "font-montserrat text-primary small text-uppercase py-2 px-3 border rounded-3 bg-black-50";
+		return "font-montserrat text-primary small text-uppercase py-2 px-3 border rounded-3 bg-black-50 text-decoration-none";
 	}
 
-	return "font-montserrat text-primary small text-uppercase d-none d-xl-inline-block";
+	return "font-montserrat text-primary small text-uppercase d-none d-xl-inline-block text-decoration-none";
 }
 
 export default function ThemeHeaderNavClient({ menuItems = [], modalMenuItems = [] }) {

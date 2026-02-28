@@ -49,7 +49,7 @@ export default async function CotizaTusEventosPage() {
 							</h2>
 							<span className="d-inline-block border"></span>
 						</div>
-						<p className="font-montserrat text-primary text-center mb-4">
+						<p className="font-montserrat text-primary text-center mb-4 d-none">
 							Completa el formulario y te enviaremos una propuesta para tu evento.
 						</p>
 						<EventQuoteForm />
