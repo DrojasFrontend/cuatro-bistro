@@ -338,6 +338,63 @@ export async function getBlogPosts({ page = 1, pageSize = 3, categorySlug = "" }
   };
 }
 
+export async function getSitemapEntries() {
+  const data = await wpFetch(
+    `
+      query SitemapEntries {
+        posts(first: 200, where: { status: PUBLISH }) {
+          nodes {
+            slug
+            modifiedGmt
+          }
+        }
+        pages(first: 100, where: { status: PUBLISH }) {
+          nodes {
+            uri
+            modifiedGmt
+          }
+        }
+      }
+    `,
+    {
+      revalidate: 300,
+      tags: ["posts", "pages"],
+    },
+  );
+
+  const postEntries = (data?.posts?.nodes || [])
+    .map((post) => ({
+      url: `/${post?.slug || ""}`.replace(/\/{2,}/g, "/"),
+      lastModified: post?.modifiedGmt ? new Date(post.modifiedGmt) : new Date(),
+    }))
+    .filter((entry) => entry.url !== "/" && entry.url !== "/blog");
+
+  const pageEntries = (data?.pages?.nodes || [])
+    .map((page) => {
+      const uri = typeof page?.uri === "string" ? page.uri.trim() : "";
+      if (!uri) return null;
+
+      const normalizedPath = uri.startsWith("/") ? uri : `/${uri}`;
+      const cleanPath = normalizedPath.replace(/\/+$/, "") || "/";
+      const path = cleanPath === "/inicio" ? "/" : cleanPath;
+
+      return {
+        url: path,
+        lastModified: page?.modifiedGmt ? new Date(page.modifiedGmt) : new Date(),
+      };
+    })
+    .filter(Boolean);
+
+  const merged = new Map();
+
+  [...pageEntries, ...postEntries].forEach((entry) => {
+    if (!entry?.url) return;
+    merged.set(entry.url, entry);
+  });
+
+  return Array.from(merged.values());
+}
+
 export async function getBlogPostBySlug(slug) {
   const data = await wpFetch(
     `
