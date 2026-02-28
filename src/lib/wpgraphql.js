@@ -472,6 +472,35 @@ export async function getThemeFeaturedImages() {
   };
 }
 
+export async function getPageFeaturedImageByUri(uri = "/") {
+  const safeUri = typeof uri === "string" && uri.trim() ? uri.trim() : "/";
+
+  const data = await wpFetch(
+    `
+      query PageFeaturedImageByUri($uri: ID!) {
+        page(id: $uri, idType: URI) {
+          featuredImage {
+            node {
+              sourceUrl
+              altText
+            }
+          }
+        }
+      }
+    `,
+    {
+      variables: { uri: safeUri },
+      revalidate: 300,
+      tags: ["pages"],
+    },
+  );
+
+  return normalizeOptionImage(
+    data?.page?.featuredImage,
+    "Imagen destacada de la pagina",
+  );
+}
+
 export async function getPlatos({ page = 1, pageSize = 3, categorySlug = "" } = {}) {
   const safePage = toPositiveInteger(page, 1);
   const safePageSize = toPositiveInteger(pageSize, 3);
