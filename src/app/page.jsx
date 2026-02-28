@@ -67,6 +67,9 @@ export default async function Inicio() {
 								fill
 								className="object-fit-cover rounded-4 overflow-hidden"
 								quality={100}
+								priority
+								fetchPriority="high"
+								sizes="(min-width: 1200px) 75vw, 100vw"
 							/>
               <div className="d-flex flex-column justify-content-between align-items-xl-start align-items-center position-absolute bottom-0 start-0 w-100 h-100 p-xxl-5 p-xl-4 p-3">
 								<ThemeHeaderNav />
