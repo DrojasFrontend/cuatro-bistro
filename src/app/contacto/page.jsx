@@ -126,7 +126,7 @@ export default async function Contacto() {
 			</div>
 			<SplitLeftPanelHero title={pageTitle} imageAlt="Imagen de contacto" />
 			<div className="split-right-panel scrollbar-hidden p-3">
-				<div className="d-flex flex-column gap-3 p-0 border-0 rounded-4 h-100">
+				<div className="d-flex flex-column gap-4 p-0 border-0 rounded-4 h-100">
 					{cardRows.map((row, rowIndex) => (
 						<div className="row g-4 align-items-stretch" key={`contact-row-${rowIndex}`}>
 							{row.map((card) => (
