@@ -1,4 +1,5 @@
 const WPGRAPHQL_URL = process.env.WPGRAPHQL_URL;
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.cuatrobistro.com";
 
 function formatWpError(error) {
   if (typeof error === "string") return error;
@@ -117,6 +118,46 @@ function normalizeOptionImage(image, fallbackAlt) {
     src: sourceUrl,
     alt: altText || fallbackAlt,
   };
+}
+
+function normalizeSeoItem(seo = {}) {
+  return {
+    title: seo?.title || "",
+    metaDesc: seo?.metaDesc || "",
+    canonical: seo?.canonical || "",
+    metaKeywords: seo?.metaKeywords || "",
+    opengraphTitle: seo?.opengraphTitle || "",
+    opengraphDescription: seo?.opengraphDescription || "",
+    opengraphImage: seo?.opengraphImage?.sourceUrl
+      ? {
+          url: seo.opengraphImage.sourceUrl,
+          alt: seo?.opengraphImage?.altText || "",
+        }
+      : null,
+    twitterTitle: seo?.twitterTitle || "",
+    twitterDescription: seo?.twitterDescription || "",
+    twitterImage: seo?.twitterImage?.sourceUrl
+      ? {
+          url: seo.twitterImage.sourceUrl,
+          alt: seo?.twitterImage?.altText || "",
+        }
+      : null,
+  };
+}
+
+function toSiteCanonical(urlOrPath = "") {
+  if (!urlOrPath) return SITE_URL;
+
+  if (urlOrPath.startsWith("/")) {
+    return `${SITE_URL}${urlOrPath}`;
+  }
+
+  try {
+    const parsed = new URL(urlOrPath);
+    return `${SITE_URL}${parsed.pathname}${parsed.search}${parsed.hash}`;
+  } catch {
+    return SITE_URL;
+  }
 }
 
 function normalizePlato(plato) {
@@ -318,6 +359,24 @@ export async function getBlogPostBySlug(slug) {
               slug
             }
           }
+          seo {
+            title
+            metaDesc
+            canonical
+            metaKeywords
+            opengraphTitle
+            opengraphDescription
+            opengraphImage {
+              sourceUrl
+              altText
+            }
+            twitterTitle
+            twitterDescription
+            twitterImage {
+              sourceUrl
+              altText
+            }
+          }
         }
       }
     `,
@@ -335,6 +394,145 @@ export async function getBlogPostBySlug(slug) {
   return {
     ...post,
     dateLabel: formatDateLabel(post.date),
+  };
+}
+
+export async function getPageSeoByUri(uri = "/") {
+  const safeUri = typeof uri === "string" && uri.trim() ? uri.trim() : "/";
+  const data = await wpFetch(
+    `
+      query PageSeoByUri($uri: ID!) {
+        page(id: $uri, idType: URI) {
+          id
+          title
+          seo {
+            title
+            metaDesc
+            canonical
+            metaKeywords
+            opengraphTitle
+            opengraphDescription
+            opengraphImage {
+              sourceUrl
+              altText
+            }
+            twitterTitle
+            twitterDescription
+            twitterImage {
+              sourceUrl
+              altText
+            }
+          }
+        }
+      }
+    `,
+    {
+      variables: { uri: safeUri },
+      revalidate: 300,
+      tags: ["pages"],
+    },
+  );
+
+  const page = data?.page || null;
+  if (!page) return null;
+
+  return {
+    title: page?.title || "",
+    seo: normalizeSeoItem(page?.seo || {}),
+  };
+}
+
+export async function getPostSeoBySlug(slug = "") {
+  const safeSlug = typeof slug === "string" ? slug.trim() : "";
+  if (!safeSlug) return null;
+
+  const data = await wpFetch(
+    `
+      query PostSeoBySlug($slug: ID!) {
+        post(id: $slug, idType: SLUG) {
+          id
+          title
+          seo {
+            title
+            metaDesc
+            canonical
+            metaKeywords
+            opengraphTitle
+            opengraphDescription
+            opengraphImage {
+              sourceUrl
+              altText
+            }
+            twitterTitle
+            twitterDescription
+            twitterImage {
+              sourceUrl
+              altText
+            }
+          }
+        }
+      }
+    `,
+    {
+      variables: { slug: safeSlug },
+      revalidate: 300,
+      tags: ["posts", `post:${safeSlug}`],
+    },
+  );
+
+  const post = data?.post || null;
+  if (!post) return null;
+
+  return {
+    title: post?.title || "",
+    seo: normalizeSeoItem(post?.seo || {}),
+  };
+}
+
+export function buildMetadataFromSeo(
+  seoData,
+  { fallbackTitle = "Cuatro Bistro", fallbackDescription = "", path = "/" } = {},
+) {
+  const seo = seoData?.seo || {};
+  const pageTitle = seo?.title || fallbackTitle;
+  const description = seo?.metaDesc || fallbackDescription;
+  const canonical = toSiteCanonical(seo?.canonical || path);
+  const keywords = typeof seo?.metaKeywords === "string"
+    ? seo.metaKeywords
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean)
+    : [];
+  const openGraphImage = seo?.opengraphImage?.url || "";
+  const twitterImage = seo?.twitterImage?.url || openGraphImage;
+
+  return {
+    title: pageTitle,
+    description,
+    keywords,
+    alternates: { canonical },
+    openGraph: {
+      title: seo?.opengraphTitle || pageTitle,
+      description: seo?.opengraphDescription || description,
+      url: canonical,
+      siteName: "Cuatro Bistro",
+      locale: "es_CO",
+      type: "website",
+      images: openGraphImage
+        ? [
+            {
+              url: openGraphImage,
+              alt: seo?.opengraphImage?.alt || pageTitle,
+            },
+          ]
+        : undefined,
+    },
+    twitter: {
+      card: twitterImage ? "summary_large_image" : "summary",
+      title: seo?.twitterTitle || pageTitle,
+      description: seo?.twitterDescription || description,
+      images: twitterImage ? [twitterImage] : undefined,
+    },
   };
 }
 

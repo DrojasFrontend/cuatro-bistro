@@ -1,7 +1,21 @@
 import Image from "next/image";
 import Link from "next/link";
 import SplitLeftPanelHero from "../../components/SplitLeftPanelHero";
-import { getBlogPosts, getThemeFeaturedImages } from "../../lib/wpgraphql";
+import {
+	buildMetadataFromSeo,
+	getBlogPosts,
+	getPageSeoByUri,
+	getThemeFeaturedImages,
+} from "../../lib/wpgraphql";
+
+export async function generateMetadata() {
+	const seoData = await getPageSeoByUri("/blog");
+	return buildMetadataFromSeo(seoData, {
+		fallbackTitle: "Blog",
+		fallbackDescription: "Noticias y novedades de Cuatro Bistro.",
+		path: "/blog",
+	});
+}
 
 export default async function Blog({ searchParams }) {
 	const resolvedSearchParams = await searchParams;

@@ -2,8 +2,12 @@ import "./globals.css";
 import "yet-another-react-lightbox/styles.css";
 
 export const metadata = {
-  title: "Cuatro Bistro",
-  description: "Cuatro Bistro - Inicio",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.cuatrobistro.com"),
+  title: {
+    default: "Cuatro Bistro",
+    template: "%s | Cuatro Bistro",
+  },
+  description: "Restaurante en Chía con cocina contemporánea y experiencias gastronómicas.",
 };
 
 export default function RootLayout({ children }) {

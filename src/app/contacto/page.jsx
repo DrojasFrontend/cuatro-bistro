@@ -1,7 +1,20 @@
 import Image from "next/image";
 import ContactGalleryLightbox from "../../components/ContactGalleryLightbox";
 import SplitLeftPanelHero from "../../components/SplitLeftPanelHero";
-import { getContactoHorario } from "../../lib/wpgraphql";
+import {
+	buildMetadataFromSeo,
+	getContactoHorario,
+	getPageSeoByUri,
+} from "../../lib/wpgraphql";
+
+export async function generateMetadata() {
+	const seoData = await getPageSeoByUri("/contacto");
+	return buildMetadataFromSeo(seoData, {
+		fallbackTitle: "Contacto",
+		fallbackDescription: "Contáctanos para reservas y eventos.",
+		path: "/contacto",
+	});
+}
 
 function toRows(items = [], perRow = 2) {
 	const rows = [];

@@ -2,7 +2,20 @@ import Image from "next/image";
 import Link from "next/link";
 import NosotrosGallerySwiper from "../../components/NosotrosGallerySwiper";
 import SplitLeftPanelHero from "../../components/SplitLeftPanelHero";
-import { getNosotrosComponentes } from "../../lib/wpgraphql";
+import {
+	buildMetadataFromSeo,
+	getNosotrosComponentes,
+	getPageSeoByUri,
+} from "../../lib/wpgraphql";
+
+export async function generateMetadata() {
+	const seoData = await getPageSeoByUri("/nosotros");
+	return buildMetadataFromSeo(seoData, {
+		fallbackTitle: "Nosotros",
+		fallbackDescription: "Conoce más sobre Cuatro Bistro.",
+		path: "/nosotros",
+	});
+}
 
 export default async function Nosotros() {
 	const { componentes, featuredImage } = await getNosotrosComponentes();

@@ -1,7 +1,21 @@
 import Image from "next/image";
 import SplitLeftPanelHero from "../../components/SplitLeftPanelHero";
-import { getPlatos, getThemeFeaturedImages } from "../../lib/wpgraphql";
+import {
+	buildMetadataFromSeo,
+	getPageSeoByUri,
+	getPlatos,
+	getThemeFeaturedImages,
+} from "../../lib/wpgraphql";
 import { menuItems } from "./items";
+
+export async function generateMetadata() {
+	const seoData = await getPageSeoByUri("/menu");
+	return buildMetadataFromSeo(seoData, {
+		fallbackTitle: "Menú",
+		fallbackDescription: "Conoce nuestras categorías y platos.",
+		path: "/menu",
+	});
+}
 
 export default async function Menu() {
 	const { platos, categories } = await getPlatos({ page: 1, pageSize: 200 });

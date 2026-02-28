@@ -2,7 +2,21 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import SplitLeftPanelHero from "../../components/SplitLeftPanelHero";
-import { getBlogPostBySlug } from "../../lib/wpgraphql";
+import {
+	buildMetadataFromSeo,
+	getBlogPostBySlug,
+	getPostSeoBySlug,
+} from "../../lib/wpgraphql";
+
+export async function generateMetadata({ params }) {
+	const { slug } = await params;
+	const seoData = await getPostSeoBySlug(slug);
+	return buildMetadataFromSeo(seoData, {
+		fallbackTitle: "Blog",
+		fallbackDescription: "Artículo de Cuatro Bistro.",
+		path: `/${slug}`,
+	});
+}
 
 export default async function BlogPost({ params }) {
 	const { slug } = await params;

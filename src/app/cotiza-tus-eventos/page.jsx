@@ -1,7 +1,20 @@
 import Image from "next/image";
 import EventQuoteForm from "../../components/EventQuoteForm";
 import SplitLeftPanelHero from "../../components/SplitLeftPanelHero";
-import { getPageFeaturedImageByUri } from "../../lib/wpgraphql";
+import {
+	buildMetadataFromSeo,
+	getPageFeaturedImageByUri,
+	getPageSeoByUri,
+} from "../../lib/wpgraphql";
+
+export async function generateMetadata() {
+	const seoData = await getPageSeoByUri("/cotiza-tus-eventos");
+	return buildMetadataFromSeo(seoData, {
+		fallbackTitle: "Cotiza tus eventos",
+		fallbackDescription: "Solicita una propuesta para tu evento en Cuatro Bistro.",
+		path: "/cotiza-tus-eventos",
+	});
+}
 
 export default async function CotizaTusEventosPage() {
 	const featuredImage = await getPageFeaturedImageByUri("/cotiza-tus-eventos");

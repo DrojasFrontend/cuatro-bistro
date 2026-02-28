@@ -1,7 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import ThemeHeaderNav from "../components/ThemeHeaderNav";
-import { getHomeHeroGrid } from "../lib/wpgraphql";
+import { buildMetadataFromSeo, getHomeHeroGrid, getPageSeoByUri } from "../lib/wpgraphql";
+
+export async function generateMetadata() {
+	const seoData = await getPageSeoByUri("/inicio");
+	return buildMetadataFromSeo(seoData, {
+		fallbackTitle: "Inicio",
+		fallbackDescription: "Bienvenidos a Cuatro Bistro.",
+		path: "/",
+	});
+}
 
 export default async function Inicio() {
 	const hero = await getHomeHeroGrid();
@@ -80,7 +89,7 @@ export default async function Inicio() {
 											<div className="borderRadius d-flex align-items-center pt-3 pb-2">
 												<span className="svgRight"></span>
 												<span className="svgLeft"></span>
-												<p className="font-forum text-primary text-uppercase m-0 px-4">{title}</p>
+												<h2 className="font-forum text-primary text-uppercase m-0 px-4 fs-5">{title}</h2>
 											</div>
 											<Image
 												src={imageSrc}
@@ -98,7 +107,7 @@ export default async function Inicio() {
 										<div className="borderRadius d-flex align-items-center pt-3 pb-2">
 											<span className="svgRight"></span>
 											<span className="svgLeft"></span>
-											<p className="font-forum text-primary text-uppercase m-0 px-4">{title}</p>
+											<h2 className="font-forum text-primary text-uppercase m-0 px-4 fs-5">{title}</h2>
 										</div>
 										<Image
 											src={imageSrc}
