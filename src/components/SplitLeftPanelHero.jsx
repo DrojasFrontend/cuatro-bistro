@@ -1,4 +1,5 @@
 import Image from "next/image";
+import SocialLinksBadgeBar from "./SocialLinksBadgeBar";
 import ThemeHeaderNav from "./ThemeHeaderNav";
 
 export default function SplitLeftPanelHero({
@@ -21,8 +22,9 @@ export default function SplitLeftPanelHero({
 				/>
 				<div className="d-flex flex-column justify-content-between align-items-xl-start align-items-center position-absolute bottom-0 start-0 w-100 h-100 p-xxl-5 p-xl-4 p-3">
 					<ThemeHeaderNav />
-					{title ? <h1 className="position-relative display-1 text-primary text-uppercase z-1">{title}</h1> : null}
+					{title ? <h1 className="position-relative display-1 text-primary text-uppercase z-1 mb-lg-0 mb-5">{title}</h1> : null}
 				</div>
+				<SocialLinksBadgeBar />
 			</div>
 		</div>
 	);

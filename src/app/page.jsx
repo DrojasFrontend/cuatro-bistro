@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import SocialLinksBadgeBar from "../components/SocialLinksBadgeBar";
 import ThemeHeaderNav from "../components/ThemeHeaderNav";
 import { buildMetadataFromSeo, getHomeHeroGrid, getPageSeoByUri } from "../lib/wpgraphql";
 
@@ -73,8 +74,9 @@ export default async function Inicio() {
 							/>
               <div className="d-flex flex-column justify-content-between align-items-xl-start align-items-center position-absolute bottom-0 start-0 w-100 h-100 p-xxl-5 p-xl-4 p-3">
 								<ThemeHeaderNav />
-                <h1 className="position-relative display-1 text-primary text-uppercase z-1" dangerouslySetInnerHTML={{ __html: heroTitle }} />
+                <h1 className="position-relative display-1 text-primary text-uppercase z-1 mb-lg-0 mb-5" dangerouslySetInnerHTML={{ __html: heroTitle }} />
               </div>
+							<SocialLinksBadgeBar />
 						</div>
 					</div>
 					<div className="col-12 col-xl-3 m-0 px-0 ps-xl-2">

@@ -46,7 +46,7 @@ export default async function BlogPost({ params }) {
 							<p className="d-flex align-items-center font-forum gap-2 text-primary small text-uppercase m-0">{post.dateLabel}</p>
 							<span className="d-inline-block border"></span>
 						</div>
-						<h1 className="font-forum text-primary text-uppercase mb-4 fs-1 text-center">{post.title}</h1>
+						<h1 className="font-forum text-primary text-uppercase mb-4 fs-1 text-center mb-lg-0 mb-5">{post.title}</h1>
 						<div
 							className="font-montserrat text-primary mb-0"
 							dangerouslySetInnerHTML={{ __html: post.content || "" }}

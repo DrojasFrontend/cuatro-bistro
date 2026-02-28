@@ -283,6 +283,22 @@ function normalizeHeroCard(card) {
   };
 }
 
+function normalizeSocialLink(item) {
+  const link = item?.enlace || {};
+  const iconNode = item?.icono?.node || null;
+  const title = typeof link.title === "string" ? link.title.trim() : "";
+  const url = typeof link.url === "string" && link.url.trim() ? link.url.trim() : "";
+  const target = typeof link.target === "string" ? link.target.trim() : "";
+
+  return {
+    title,
+    url,
+    target,
+    iconUrl: iconNode?.sourceUrl || null,
+    iconAlt: iconNode?.altText || title || "Red social",
+  };
+}
+
 export async function wpFetch(query, { variables = {}, revalidate = 300, tags = [] } = {}) {
   if (!WPGRAPHQL_URL) {
     throw new Error("Missing WPGRAPHQL_URL. Add it to .env.local");
@@ -797,6 +813,40 @@ export async function getThemeFeaturedImages() {
     blog: normalizeOptionImage(fields?.destacadaBlog, "Imagen destacada del blog"),
     menu: normalizeOptionImage(fields?.destacadaMenu, "Imagen destacada del menu"),
   };
+}
+
+export async function getThemeSocialLinks() {
+  const data = await wpFetch(
+    `
+      query ThemeSocialLinks {
+        themeOptions {
+          themeOptionsFields {
+            redesSociales {
+              enlace {
+                target
+                title
+                url
+              }
+              icono {
+                node {
+                  altText
+                  sourceUrl
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    {
+      revalidate: 300,
+      tags: ["theme-options"],
+    },
+  );
+
+  return (data?.themeOptions?.themeOptionsFields?.redesSociales || [])
+    .map(normalizeSocialLink)
+    .filter((item) => item.url && item.iconUrl);
 }
 
 export async function getPageFeaturedImageByUri(uri = "/") {
