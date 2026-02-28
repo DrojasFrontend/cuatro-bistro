@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { PhoneInput } from "react-international-phone";
+import "react-international-phone/style.css";
 
 const INITIAL_FORM = {
 	nombre: "",
@@ -9,7 +11,7 @@ const INITIAL_FORM = {
 	capacidad: "",
 	tipoEvento: "social",
 	correo: "",
-	telefono: "",
+	telefono: "+57",
 };
 
 export default function EventQuoteForm() {
@@ -31,7 +33,15 @@ export default function EventQuoteForm() {
 			const response = await fetch("/api/evento-cotizacion", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(form),
+				body: JSON.stringify({
+					nombre: form.nombre,
+					apellido: form.apellido,
+					fechaEvento: form.fechaEvento,
+					capacidad: form.capacidad,
+					tipoEvento: form.tipoEvento,
+					correo: form.correo,
+					telefono: form.telefono,
+				}),
 			});
 
 			const payload = await response.json();
@@ -151,14 +161,21 @@ export default function EventQuoteForm() {
 				<label htmlFor="telefono" className="form-label font-montserrat text-primary small text-uppercase">
 					Número telefónico
 				</label>
-				<input
-					id="telefono"
-					name="telefono"
-					type="tel"
-					className="form-control bg-transparent text-primary border rounded-3"
+				<PhoneInput
+					defaultCountry="co"
 					value={form.telefono}
-					onChange={onChange}
-					required
+					onChange={(phone) => setForm((current) => ({ ...current, telefono: phone }))}
+					className="w-100"
+					inputClassName="form-control bg-transparent text-primary border rounded-end-3"
+					countrySelectorStyleProps={{
+						buttonClassName: "border rounded-start-3 bg-transparent text-primary",
+					}}
+					inputProps={{
+						id: "telefono",
+						name: "telefono",
+						required: true,
+						placeholder: "300 123 4567",
+					}}
 				/>
 			</div>
 
