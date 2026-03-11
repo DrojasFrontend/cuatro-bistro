@@ -28,6 +28,10 @@ export default function RootLayout({ children }) {
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/site.webmanifest" />
+        <meta
+          name="google-site-verification"
+          content="KO0zZlGWwESWGVjU-Jtwdmv2u8CFarHlLiNR1s5ro-c"
+        />
         <link
           href="https://fonts.googleapis.com/css2?family=Forum&family=Montserrat:wght@400;500;600;700&display=swap"
           rel="stylesheet"
