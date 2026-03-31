@@ -80,7 +80,7 @@ export default async function Nosotros() {
 												/>
 											) : null}
 											{!hasGallery && hasImage ? (
-												<div className="position-relative capa d-block text-decoration-none" style={{ minHeight: "250px" }}>
+												<div className="position-relative capa d-block text-decoration-none" style={{ minHeight: "100%" }}>
 													<Image
 														src={componente.imageUrl}
 														alt={componente.imageAlt || "Imagen de nosotros"}
