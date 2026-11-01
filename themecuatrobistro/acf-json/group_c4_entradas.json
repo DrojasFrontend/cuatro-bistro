@@ -1,0 +1,41 @@
+{
+    "key": "group_c4_entradas",
+    "title": "Entradas",
+    "fields": [
+        {
+            "key": "field_c4_id",
+            "label": "Imagen destacada",
+            "name": "imagen_destacada",
+            "type": "image",
+            "show_in_graphql": 1,
+            "graphql_field_name": "imagenDestacada",
+            "return_format": "array",
+            "preview_size": "medium",
+            "library": "all"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "post"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "show_in_graphql": 1,
+    "graphql_field_name": "entradas",
+    "map_graphql_types_from_location_rules": 0,
+    "graphql_types": [
+        "Post"
+    ],
+    "modified": 1793559502
+}

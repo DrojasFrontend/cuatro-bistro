@@ -1,0 +1,38 @@
+{
+    "key": "group_c4_plato",
+    "title": "Datos del plato",
+    "fields": [
+        {
+            "key": "field_c4_pr",
+            "label": "Precio",
+            "name": "precio",
+            "type": "text",
+            "show_in_graphql": 1,
+            "graphql_field_name": "precio"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "platos"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "show_in_graphql": 1,
+    "graphql_field_name": "platoFields",
+    "map_graphql_types_from_location_rules": 0,
+    "graphql_types": [
+        "Plato"
+    ],
+    "modified": 1793559502
+}

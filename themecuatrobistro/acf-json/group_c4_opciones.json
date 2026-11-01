@@ -1,0 +1,141 @@
+{
+    "key": "group_c4_opciones",
+    "title": "Opciones del tema",
+    "fields": [
+        {
+            "key": "field_c4_mi",
+            "label": "Ítems del menú",
+            "name": "menu_items",
+            "type": "repeater",
+            "show_in_graphql": 1,
+            "graphql_field_name": "menuItems",
+            "layout": "table",
+            "button_label": "Agregar ítem",
+            "sub_fields": [
+                {
+                    "key": "field_c4_mi_est",
+                    "label": "Estilo",
+                    "name": "estilo",
+                    "type": "radio",
+                    "show_in_graphql": 1,
+                    "graphql_field_name": "estilo",
+                    "choices": {
+                        "estilo_1": "Texto",
+                        "estilo_2": "Botón"
+                    },
+                    "default_value": "estilo_1",
+                    "return_format": "value",
+                    "layout": "horizontal"
+                },
+                {
+                    "key": "field_c4_mi_enl",
+                    "label": "Enlace",
+                    "name": "enlace",
+                    "type": "link",
+                    "show_in_graphql": 1,
+                    "graphql_field_name": "enlace",
+                    "return_format": "array"
+                }
+            ]
+        },
+        {
+            "key": "field_c4_mm",
+            "label": "Ítems del menú modal",
+            "name": "menu_items_modal",
+            "type": "repeater",
+            "show_in_graphql": 1,
+            "graphql_field_name": "menuItemsModal",
+            "layout": "table",
+            "button_label": "Agregar ítem",
+            "sub_fields": [
+                {
+                    "key": "field_c4_mm_enl",
+                    "label": "Enlace",
+                    "name": "enlace",
+                    "type": "link",
+                    "show_in_graphql": 1,
+                    "graphql_field_name": "enlace",
+                    "return_format": "array"
+                }
+            ]
+        },
+        {
+            "key": "field_c4_db",
+            "label": "Imagen destacada del blog",
+            "name": "destacada_blog",
+            "type": "image",
+            "show_in_graphql": 1,
+            "graphql_field_name": "destacadaBlog",
+            "return_format": "array",
+            "preview_size": "medium",
+            "library": "all"
+        },
+        {
+            "key": "field_c4_dm",
+            "label": "Imagen destacada del menú",
+            "name": "destacada_menu",
+            "type": "image",
+            "show_in_graphql": 1,
+            "graphql_field_name": "destacadaMenu",
+            "return_format": "array",
+            "preview_size": "medium",
+            "library": "all"
+        },
+        {
+            "key": "field_c4_rs",
+            "label": "Redes sociales",
+            "name": "redes_sociales",
+            "type": "repeater",
+            "show_in_graphql": 1,
+            "graphql_field_name": "redesSociales",
+            "layout": "table",
+            "button_label": "Agregar red",
+            "sub_fields": [
+                {
+                    "key": "field_c4_rs_enl",
+                    "label": "Enlace",
+                    "name": "enlace",
+                    "type": "link",
+                    "show_in_graphql": 1,
+                    "graphql_field_name": "enlace",
+                    "return_format": "array"
+                },
+                {
+                    "key": "field_c4_rs_ico",
+                    "label": "Ícono",
+                    "name": "icono",
+                    "type": "image",
+                    "show_in_graphql": 1,
+                    "graphql_field_name": "icono",
+                    "return_format": "array",
+                    "preview_size": "medium",
+                    "library": "all"
+                }
+            ]
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "options_page",
+                "operator": "==",
+                "value": "opciones-tema"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "show_in_graphql": 1,
+    "graphql_field_name": "themeOptionsFields",
+    "map_graphql_types_from_location_rules": 0,
+    "graphql_types": [
+        "ThemeOptions"
+    ],
+    "modified": 1793559502
+}

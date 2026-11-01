@@ -1,0 +1,296 @@
+{
+    "key": "group_c4_componentes",
+    "title": "Componentes",
+    "fields": [
+        {
+            "key": "field_c4_pcf",
+            "label": "Componentes de página",
+            "name": "page_components_fields",
+            "type": "flexible_content",
+            "show_in_graphql": 1,
+            "graphql_field_name": "pageComponentsFields",
+            "button_label": "Agregar componente",
+            "layouts": [
+                {
+                    "key": "layout_c4_hero_grid",
+                    "name": "bloque_hero_grid",
+                    "label": "Hero en grilla",
+                    "display": "block",
+                    "sub_fields": [
+                        {
+                            "key": "field_c4_hg_tit",
+                            "label": "Título principal",
+                            "name": "titulo_principal",
+                            "type": "text",
+                            "show_in_graphql": 1,
+                            "graphql_field_name": "tituloPrincipal"
+                        },
+                        {
+                            "key": "field_c4_hg_img",
+                            "label": "Imagen principal",
+                            "name": "imagen_principal",
+                            "type": "image",
+                            "show_in_graphql": 1,
+                            "graphql_field_name": "imagenPrincipal",
+                            "return_format": "array",
+                            "preview_size": "medium",
+                            "library": "all"
+                        },
+                        {
+                            "key": "field_c4_hg_tar",
+                            "label": "Tarjetas secundarias",
+                            "name": "tarjetas_secundarias",
+                            "type": "repeater",
+                            "show_in_graphql": 1,
+                            "graphql_field_name": "tarjetasSecundarias",
+                            "layout": "block",
+                            "button_label": "Agregar tarjeta",
+                            "sub_fields": [
+                                {
+                                    "key": "field_c4_hg_tar_enl",
+                                    "label": "Enlace",
+                                    "name": "enlace",
+                                    "type": "link",
+                                    "show_in_graphql": 1,
+                                    "graphql_field_name": "enlace",
+                                    "return_format": "array"
+                                },
+                                {
+                                    "key": "field_c4_hg_tar_img",
+                                    "label": "Imagen",
+                                    "name": "imagen",
+                                    "type": "image",
+                                    "show_in_graphql": 1,
+                                    "graphql_field_name": "imagen",
+                                    "return_format": "array",
+                                    "preview_size": "medium",
+                                    "library": "all"
+                                }
+                            ]
+                        }
+                    ],
+                    "min": "",
+                    "max": ""
+                },
+                {
+                    "key": "layout_c4_img_txt",
+                    "name": "bloque_imagen_texto",
+                    "label": "Imagen y texto",
+                    "display": "block",
+                    "sub_fields": [
+                        {
+                            "key": "field_c4_it_tit",
+                            "label": "Título",
+                            "name": "titulo",
+                            "type": "text",
+                            "show_in_graphql": 1,
+                            "graphql_field_name": "titulo"
+                        },
+                        {
+                            "key": "field_c4_it_desc",
+                            "label": "Descripción",
+                            "name": "descripcion",
+                            "type": "wysiwyg",
+                            "show_in_graphql": 1,
+                            "graphql_field_name": "descripcion",
+                            "tabs": "all",
+                            "toolbar": "basic",
+                            "media_upload": 0
+                        },
+                        {
+                            "key": "field_c4_it_pos",
+                            "label": "Posición de la imagen",
+                            "name": "posicion_imagen",
+                            "type": "radio",
+                            "show_in_graphql": 1,
+                            "graphql_field_name": "posicionImagen",
+                            "choices": {
+                                "derecha": "Derecha",
+                                "izquierda": "Izquierda"
+                            },
+                            "default_value": "derecha",
+                            "return_format": "value",
+                            "layout": "horizontal"
+                        },
+                        {
+                            "key": "field_c4_it_img",
+                            "label": "Imagen",
+                            "name": "imagen",
+                            "type": "image",
+                            "show_in_graphql": 1,
+                            "graphql_field_name": "imagen",
+                            "return_format": "array",
+                            "preview_size": "medium",
+                            "library": "all"
+                        },
+                        {
+                            "key": "field_c4_it_cta",
+                            "label": "CTA",
+                            "name": "cta",
+                            "type": "link",
+                            "show_in_graphql": 1,
+                            "graphql_field_name": "cta",
+                            "return_format": "array"
+                        },
+                        {
+                            "key": "field_c4_it_car",
+                            "label": "Mostrar carrusel de galería",
+                            "name": "carrusel_galeria",
+                            "type": "true_false",
+                            "show_in_graphql": 1,
+                            "graphql_field_name": "carruselGaleria",
+                            "ui": 1
+                        },
+                        {
+                            "key": "field_c4_it_gal",
+                            "label": "Galería",
+                            "name": "galeria",
+                            "type": "gallery",
+                            "show_in_graphql": 1,
+                            "graphql_field_name": "galeria",
+                            "return_format": "array",
+                            "preview_size": "medium",
+                            "library": "all"
+                        }
+                    ],
+                    "min": "",
+                    "max": ""
+                },
+                {
+                    "key": "layout_c4_tarjetas",
+                    "name": "bloque_tarjetas",
+                    "label": "Tarjetas",
+                    "display": "block",
+                    "sub_fields": [
+                        {
+                            "key": "field_c4_ta_tit",
+                            "label": "Título principal",
+                            "name": "titulo_principal",
+                            "type": "text",
+                            "show_in_graphql": 1,
+                            "graphql_field_name": "tituloPrincipal"
+                        },
+                        {
+                            "key": "field_c4_ta_est",
+                            "label": "Estilo",
+                            "name": "estilo",
+                            "type": "radio",
+                            "show_in_graphql": 1,
+                            "graphql_field_name": "estilo",
+                            "choices": {
+                                "estilo_1": "Texto",
+                                "estilo_2": "Galería",
+                                "estilo_3": "Mapa"
+                            },
+                            "default_value": "estilo_1",
+                            "return_format": "value",
+                            "layout": "horizontal"
+                        },
+                        {
+                            "key": "field_c4_ta_ite",
+                            "label": "Ítems",
+                            "name": "items_tarjetas",
+                            "type": "repeater",
+                            "show_in_graphql": 1,
+                            "graphql_field_name": "itemsTarjetas",
+                            "layout": "block",
+                            "button_label": "Agregar ítem",
+                            "sub_fields": [
+                                {
+                                    "key": "field_c4_ta_ite_txt",
+                                    "label": "Texto",
+                                    "name": "texto",
+                                    "type": "text",
+                                    "show_in_graphql": 1,
+                                    "graphql_field_name": "texto"
+                                },
+                                {
+                                    "key": "field_c4_ta_ite_opc",
+                                    "label": "Opción",
+                                    "name": "opcion",
+                                    "type": "radio",
+                                    "show_in_graphql": 1,
+                                    "graphql_field_name": "opcion",
+                                    "choices": {
+                                        "detalle": "Detalle",
+                                        "enlace": "Enlace"
+                                    },
+                                    "default_value": "detalle",
+                                    "return_format": "value",
+                                    "layout": "horizontal"
+                                },
+                                {
+                                    "key": "field_c4_ta_ite_det",
+                                    "label": "Detalle",
+                                    "name": "detalle",
+                                    "type": "text",
+                                    "show_in_graphql": 1,
+                                    "graphql_field_name": "detalle"
+                                },
+                                {
+                                    "key": "field_c4_ta_ite_enl",
+                                    "label": "Enlace",
+                                    "name": "enlace",
+                                    "type": "link",
+                                    "show_in_graphql": 1,
+                                    "graphql_field_name": "enlace",
+                                    "return_format": "array"
+                                }
+                            ]
+                        },
+                        {
+                            "key": "field_c4_ta_gal",
+                            "label": "Galería",
+                            "name": "galeria",
+                            "type": "gallery",
+                            "show_in_graphql": 1,
+                            "graphql_field_name": "galeria",
+                            "return_format": "array",
+                            "preview_size": "medium",
+                            "library": "all"
+                        },
+                        {
+                            "key": "field_c4_ta_map",
+                            "label": "Mapa (código embed)",
+                            "name": "mapa",
+                            "type": "textarea",
+                            "show_in_graphql": 1,
+                            "graphql_field_name": "mapa",
+                            "rows": 3,
+                            "new_lines": ""
+                        }
+                    ],
+                    "min": "",
+                    "max": ""
+                }
+            ]
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "page"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "show_in_graphql": 1,
+    "graphql_field_name": "componentes",
+    "map_graphql_types_from_location_rules": 0,
+    "graphql_types": [
+        "Page"
+    ],
+    "modified": 1793559502,
+    "hide_on_screen": [
+        "the_content"
+    ]
+}
