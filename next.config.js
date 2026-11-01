@@ -7,6 +7,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "**.cloudwaysapps.com",
       },
+      {
+        protocol: "https",
+        hostname: "**.hostingersite.com",
+      },
     ],
   },
 };
